@@ -1,5 +1,5 @@
-#ifndef HPP_REXP_NODE
-#define HPP_REXP_NODE
+#ifndef HPP_REXPNODE
+#define HPP_REXPNODE
 //lockguard
 
 //вершина дерева РВ
@@ -13,14 +13,14 @@ struct NData
     /*
       bool is_calc = false; //посчитали уже?
     */
-    bool is_nullable;
+    bool is_nullable = false;
 
-    std::set<size_t> firstpos;
-    std::set<size_t> lastpos;
-    
+    std::set<std::pair<char, size_t>> firstpos;
+    std::set<std::pair<char, size_t>> lastpos;
+
     //перечисляемый тип
     enum class Type
-    {
+   {
         Char,
         Conc,
         Union,
@@ -47,6 +47,9 @@ void calculate(Node<NData>& place)
             /*begin возвращает итератор на указатель, его разыменовываем*/
             std::shared_ptr<Node<NData>> c1 = *(place.children.begin());
             std::shared_ptr<Node<NData>> c2 = *(++place.children.begin());
+            /*рекурсивно*/
+            calculate(*c1);
+            calculate(*c2);
             /*вычисляем firstpos*/
             if (c1->value.is_nullable)
             {
@@ -67,7 +70,7 @@ void calculate(Node<NData>& place)
             }
             else
             {
-                place.value.lastpos = c1->value.lastpos;
+                place.value.lastpos = c2->value.lastpos;
             }
             /*вычисляем nullable*/
             place.value.is_nullable = c1->value.is_nullable && c2->value.is_nullable;
@@ -78,6 +81,9 @@ void calculate(Node<NData>& place)
             /*begin возвращает итератор на указатель, его разыменовываем*/
             std::shared_ptr<Node<NData>> c1 = *(place.children.begin());
             std::shared_ptr<Node<NData>> c2 = *(++place.children.begin());
+            /*рекурсивно*/
+            calculate(*c1);
+            calculate(*c2);
             /*вычисляем firstpos*/
             std::set_union(c1->value.firstpos.begin(), c1->value.firstpos.end(),
                            c2->value.firstpos.begin(), c2->value.firstpos.end(),
@@ -94,6 +100,8 @@ void calculate(Node<NData>& place)
         {
             /*begin возвращает итератор на указатель, его разыменовываем*/
             std::shared_ptr<Node<NData>> c1 = *(place.children.begin());
+            /*рекурсивно*/
+            calculate(*c1);
             /*вычисляем firstpos*/
             place.value.firstpos =  c1->value.firstpos;
             /*вычисляем lastpos*/

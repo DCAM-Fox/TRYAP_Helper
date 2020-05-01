@@ -6,7 +6,7 @@ project(Rubbur)
 
 # Директория заголовочных файлов.
 include_directories(include)
-#include_directories(include/Physics)
+include_directories(include/RegExpr)
 #include_directories(include/GUI)
 #include_directories(include/CLI)
 #include_directories(include/Utilities)

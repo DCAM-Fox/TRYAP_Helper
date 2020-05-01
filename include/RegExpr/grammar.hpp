@@ -33,6 +33,12 @@
 // Undocumented macros, especially those whose name start with YY_,
 // are private implementation details.  Do not rely on them.
 
+// //                    "%code top" blocks.
+#line 11 "grammar.yy" // lalr1.cc:423
+
+#include "rexpnode.hpp"
+
+#line 42 "grammar.hpp" // lalr1.cc:423
 
 
 
@@ -152,7 +158,7 @@
 
 
 namespace yy {
-#line 156 "grammar.cpp" // lalr1.cc:431
+#line 162 "grammar.hpp" // lalr1.cc:431
 
 
 
@@ -334,11 +340,13 @@ namespace yy {
     union union_type
     {
       // LETTER
-      char dummy1[sizeof (char)];
+      char dummy1[sizeof (std::pair<char, size_t>)];
 
-      // EXPR
-      // TERM
-      char dummy2[sizeof (std::string)];
+      // U
+      // C
+      // I
+      // L
+      char dummy2[sizeof (std::shared_ptr<Node<NData>>)];
     };
 
     /// The size of the largest semantic type.
@@ -434,23 +442,23 @@ namespace yy {
       {}
 #endif
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, char&& v)
+      basic_symbol (typename Base::kind_type t, std::pair<char, size_t>&& v)
         : Base (t)
         , value (std::move (v))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const char& v)
+      basic_symbol (typename Base::kind_type t, const std::pair<char, size_t>& v)
         : Base (t)
         , value (v)
       {}
 #endif
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, std::string&& v)
+      basic_symbol (typename Base::kind_type t, std::shared_ptr<Node<NData>>&& v)
         : Base (t)
         , value (std::move (v))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const std::string& v)
+      basic_symbol (typename Base::kind_type t, const std::shared_ptr<Node<NData>>& v)
         : Base (t)
         , value (v)
       {}
@@ -479,12 +487,14 @@ namespace yy {
 switch (yytype)
     {
       case 3: // LETTER
-        value.template destroy< char > ();
+        value.template destroy< std::pair<char, size_t> > ();
         break;
 
-      case 9: // EXPR
-      case 10: // TERM
-        value.template destroy< std::string > ();
+      case 9: // U
+      case 10: // C
+      case 11: // I
+      case 12: // L
+        value.template destroy< std::shared_ptr<Node<NData>> > ();
         break;
 
       default:
@@ -573,13 +583,13 @@ switch (yytype)
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
-      symbol_type (int tok, char v)
+      symbol_type (int tok, std::pair<char, size_t> v)
         : super_type(token_type (tok), std::move (v))
       {
         YYASSERT (tok == token::LETTER);
       }
 #else
-      symbol_type (int tok, const char& v)
+      symbol_type (int tok, const std::pair<char, size_t>& v)
         : super_type(token_type (tok), v)
       {
         YYASSERT (tok == token::LETTER);
@@ -588,16 +598,16 @@ switch (yytype)
     };
 
     /// Build a parser object.
-    parser ();
+    parser (std::istream& stream_yyarg, std::shared_ptr<Node<NData>>& root_yyarg);
     virtual ~parser ();
 
     /// Parse.  An alias for parse ().
     /// \returns  0 iff parsing succeeded.
-      int operator() (std::istream stream);
+    int operator() ();
 
     /// Parse.
     /// \returns  0 iff parsing succeeded.
-      virtual int parse(std::istream& stream);
+    virtual int parse ();
 
 #if YYDEBUG
     /// The current debugging stream.
@@ -639,14 +649,14 @@ switch (yytype)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_LETTER (char v)
+      make_LETTER (std::pair<char, size_t> v)
       {
         return symbol_type (token::LETTER, std::move (v));
       }
 #else
       static
       symbol_type
-      make_LETTER (const char& v)
+      make_LETTER (const std::pair<char, size_t>& v)
       {
         return symbol_type (token::LETTER, v);
       }
@@ -767,7 +777,7 @@ switch (yytype)
   // number is the opposite.  If YYTABLE_NINF, syntax error.
   static const unsigned char yytable_[];
 
-  static const signed char yycheck_[];
+  static const unsigned char yycheck_[];
 
   // YYSTOS[STATE-NUM] -- The (internal number of the) accessing
   // symbol of state STATE-NUM.
@@ -1014,15 +1024,18 @@ switch (yytype)
     enum
     {
       yyeof_ = 0,
-      yylast_ = 11,     ///< Last index in yytable_.
-      yynnts_ = 4,  ///< Number of nonterminal symbols.
-      yyfinal_ = 10, ///< Termination state number.
+      yylast_ = 8,     ///< Last index in yytable_.
+      yynnts_ = 6,  ///< Number of nonterminal symbols.
+      yyfinal_ = 12, ///< Termination state number.
       yyterror_ = 1,
       yyerrcode_ = 256,
       yyntokens_ = 8  ///< Number of tokens.
     };
 
 
+    // User arguments.
+    std::istream& stream;
+    std::shared_ptr<Node<NData>>& root;
   };
 
   parser::token_number_type
@@ -1083,12 +1096,14 @@ switch (yytype)
     switch (this->type_get ())
     {
       case 3: // LETTER
-        value.move< char > (std::move (that.value));
+        value.move< std::pair<char, size_t> > (std::move (that.value));
         break;
 
-      case 9: // EXPR
-      case 10: // TERM
-        value.move< std::string > (std::move (that.value));
+      case 9: // U
+      case 10: // C
+      case 11: // I
+      case 12: // L
+        value.move< std::shared_ptr<Node<NData>> > (std::move (that.value));
         break;
 
       default:
@@ -1106,12 +1121,14 @@ switch (yytype)
     switch (this->type_get ())
     {
       case 3: // LETTER
-        value.copy< char > (YY_MOVE (that.value));
+        value.copy< std::pair<char, size_t> > (YY_MOVE (that.value));
         break;
 
-      case 9: // EXPR
-      case 10: // TERM
-        value.copy< std::string > (YY_MOVE (that.value));
+      case 9: // U
+      case 10: // C
+      case 11: // I
+      case 12: // L
+        value.copy< std::shared_ptr<Node<NData>> > (YY_MOVE (that.value));
         break;
 
       default:
@@ -1137,12 +1154,14 @@ switch (yytype)
     switch (this->type_get ())
     {
       case 3: // LETTER
-        value.move< char > (YY_MOVE (s.value));
+        value.move< std::pair<char, size_t> > (YY_MOVE (s.value));
         break;
 
-      case 9: // EXPR
-      case 10: // TERM
-        value.move< std::string > (YY_MOVE (s.value));
+      case 9: // U
+      case 10: // C
+      case 11: // I
+      case 12: // L
+        value.move< std::shared_ptr<Node<NData>> > (YY_MOVE (s.value));
         break;
 
       default:
@@ -1207,7 +1226,7 @@ switch (yytype)
 
 
 } // yy
-#line 1211 "grammar.cpp" // lalr1.cc:431
+#line 1230 "grammar.hpp" // lalr1.cc:431
 
 
 
@@ -1215,13 +1234,15 @@ switch (yytype)
 
 
 // Unqualified %code blocks.
-#line 33 "grammar.yy" // lalr1.cc:435
+#line 101 "grammar.yy" // lalr1.cc:435
 
   namespace yy
   {
     // Return the next token.
     auto yylex(std::istream& stream) -> parser::symbol_type
     {
+      static size_t i = 0;
+
       //std::string input;
       //cin.getline(input);
 
@@ -1262,7 +1283,8 @@ switch (yytype)
           }
           default:
           {
-            return parser::make_LETTER (input);
+            ++i;
+            return parser::make_LETTER(std::make_pair(input, i));
             break;
           }
         }
@@ -1270,7 +1292,7 @@ switch (yytype)
     }
   }
 
-#line 1274 "grammar.cpp" // lalr1.cc:435
+#line 1296 "grammar.hpp" // lalr1.cc:435
 
 
 #ifndef YY_
@@ -1346,14 +1368,17 @@ switch (yytype)
 
 
 namespace yy {
-#line 1350 "grammar.cpp" // lalr1.cc:510
+#line 1372 "grammar.hpp" // lalr1.cc:510
 
   /// Build a parser object.
-  parser::parser ()
+  parser::parser (std::istream& stream_yyarg, std::shared_ptr<Node<NData>>& root_yyarg)
+    :
 #if YYDEBUG
-     :yydebug_ (false),
-      yycdebug_ (&std::cerr)
+      yydebug_ (false),
+      yycdebug_ (&std::cerr),
 #endif
+      stream (stream_yyarg),
+      root (root_yyarg)
   {}
 
   parser::~parser ()
@@ -1412,12 +1437,14 @@ namespace yy {
     switch (that.type_get ())
     {
       case 3: // LETTER
-        value.YY_MOVE_OR_COPY< char > (YY_MOVE (that.value));
+        value.YY_MOVE_OR_COPY< std::pair<char, size_t> > (YY_MOVE (that.value));
         break;
 
-      case 9: // EXPR
-      case 10: // TERM
-        value.YY_MOVE_OR_COPY< std::string > (YY_MOVE (that.value));
+      case 9: // U
+      case 10: // C
+      case 11: // I
+      case 12: // L
+        value.YY_MOVE_OR_COPY< std::shared_ptr<Node<NData>> > (YY_MOVE (that.value));
         break;
 
       default:
@@ -1436,12 +1463,14 @@ namespace yy {
     switch (that.type_get ())
     {
       case 3: // LETTER
-        value.move< char > (YY_MOVE (that.value));
+        value.move< std::pair<char, size_t> > (YY_MOVE (that.value));
         break;
 
-      case 9: // EXPR
-      case 10: // TERM
-        value.move< std::string > (YY_MOVE (that.value));
+      case 9: // U
+      case 10: // C
+      case 11: // I
+      case 12: // L
+        value.move< std::shared_ptr<Node<NData>> > (YY_MOVE (that.value));
         break;
 
       default:
@@ -1460,12 +1489,14 @@ namespace yy {
     switch (that.type_get ())
     {
       case 3: // LETTER
-        value.move< char > (that.value);
+        value.move< std::pair<char, size_t> > (that.value);
         break;
 
-      case 9: // EXPR
-      case 10: // TERM
-        value.move< std::string > (that.value);
+      case 9: // U
+      case 10: // C
+      case 11: // I
+      case 12: // L
+        value.move< std::shared_ptr<Node<NData>> > (that.value);
         break;
 
       default:
@@ -1583,13 +1614,13 @@ namespace yy {
   }
 
   int
-  parser::operator() (std::istream stream)
+  parser::operator() ()
   {
-      return parse(stream);
+    return parse ();
   }
 
   int
-  parser::parse(std::istream& stream)
+  parser::parse ()
   {
     // State.
     int yyn;
@@ -1650,7 +1681,7 @@ namespace yy {
         try
 #endif // YY_EXCEPTIONS
           {
-            symbol_type yylookahead (yylex(stream));
+            symbol_type yylookahead (yylex (stream));
             yyla.move (yylookahead);
           }
 #if YY_EXCEPTIONS
@@ -1713,12 +1744,14 @@ namespace yy {
       switch (yyr1_[yyn])
     {
       case 3: // LETTER
-        yylhs.value.emplace< char > ();
+        yylhs.value.emplace< std::pair<char, size_t> > ();
         break;
 
-      case 9: // EXPR
-      case 10: // TERM
-        yylhs.value.emplace< std::string > ();
+      case 9: // U
+      case 10: // C
+      case 11: // I
+      case 12: // L
+        yylhs.value.emplace< std::shared_ptr<Node<NData>> > ();
         break;
 
       default:
@@ -1736,49 +1769,90 @@ namespace yy {
           switch (yyn)
             {
   case 2:
-#line 16 "grammar.yy" // lalr1.cc:919
-    { std::cout << yystack_[0].value.as < std::string > () << '\n'; }
-#line 1742 "grammar.cpp" // lalr1.cc:919
+#line 27 "grammar.yy" // lalr1.cc:919
+    {
+            root = yystack_[0].value.as < std::shared_ptr<Node<NData>> > ();
+        }
+#line 1777 "grammar.hpp" // lalr1.cc:919
     break;
 
   case 3:
-#line 19 "grammar.yy" // lalr1.cc:919
-    { yylhs.value.as < std::string > () = yystack_[0].value.as < std::string > (); }
-#line 1748 "grammar.cpp" // lalr1.cc:919
+#line 33 "grammar.yy" // lalr1.cc:919
+    {
+            yylhs.value.as < std::shared_ptr<Node<NData>> > () = yystack_[0].value.as < std::shared_ptr<Node<NData>> > ();
+        }
+#line 1785 "grammar.hpp" // lalr1.cc:919
     break;
 
   case 4:
-#line 20 "grammar.yy" // lalr1.cc:919
-    { yylhs.value.as < std::string > () = yystack_[2].value.as < std::string > () + "++" + yystack_[0].value.as < std::string > (); }
-#line 1754 "grammar.cpp" // lalr1.cc:919
+#line 37 "grammar.yy" // lalr1.cc:919
+    {
+            yylhs.value.as < std::shared_ptr<Node<NData>> > () = std::make_shared<Node<NData>>();
+            yylhs.value.as < std::shared_ptr<Node<NData>> > ()->add_child(yystack_[2].value.as < std::shared_ptr<Node<NData>> > ());
+            yylhs.value.as < std::shared_ptr<Node<NData>> > ()->add_child(yystack_[0].value.as < std::shared_ptr<Node<NData>> > ());
+            yylhs.value.as < std::shared_ptr<Node<NData>> > ()->value.type = NData::Type::Union;
+        }
+#line 1796 "grammar.hpp" // lalr1.cc:919
     break;
 
   case 5:
-#line 21 "grammar.yy" // lalr1.cc:919
-    { yylhs.value.as < std::string > () = yystack_[1].value.as < std::string > () + yystack_[0].value.as < std::string > (); }
-#line 1760 "grammar.cpp" // lalr1.cc:919
+#line 50 "grammar.yy" // lalr1.cc:919
+    {
+            yylhs.value.as < std::shared_ptr<Node<NData>> > () = std::make_shared<Node<NData>>();
+            yylhs.value.as < std::shared_ptr<Node<NData>> > ()->add_child(yystack_[1].value.as < std::shared_ptr<Node<NData>> > ());
+            yylhs.value.as < std::shared_ptr<Node<NData>> > ()->add_child(yystack_[0].value.as < std::shared_ptr<Node<NData>> > ());
+            yylhs.value.as < std::shared_ptr<Node<NData>> > ()->value.type = NData::Type::Conc;
+        }
+#line 1807 "grammar.hpp" // lalr1.cc:919
     break;
 
   case 6:
-#line 24 "grammar.yy" // lalr1.cc:919
-    { yylhs.value.as < std::string > () = yystack_[0].value.as < char > (); }
-#line 1766 "grammar.cpp" // lalr1.cc:919
+#line 57 "grammar.yy" // lalr1.cc:919
+    {
+            yylhs.value.as < std::shared_ptr<Node<NData>> > () = yystack_[0].value.as < std::shared_ptr<Node<NData>> > ();
+        }
+#line 1815 "grammar.hpp" // lalr1.cc:919
     break;
 
   case 7:
-#line 25 "grammar.yy" // lalr1.cc:919
-    { yylhs.value.as < std::string > () = yystack_[1].value.as < std::string > () + "**"; }
-#line 1772 "grammar.cpp" // lalr1.cc:919
+#line 67 "grammar.yy" // lalr1.cc:919
+    {
+            yylhs.value.as < std::shared_ptr<Node<NData>> > () = yystack_[0].value.as < std::shared_ptr<Node<NData>> > ();
+        }
+#line 1823 "grammar.hpp" // lalr1.cc:919
     break;
 
   case 8:
-#line 26 "grammar.yy" // lalr1.cc:919
-    { yylhs.value.as < std::string > () = "[" + yystack_[1].value.as < std::string > () + "]"; }
-#line 1778 "grammar.cpp" // lalr1.cc:919
+#line 71 "grammar.yy" // lalr1.cc:919
+    {
+            yylhs.value.as < std::shared_ptr<Node<NData>> > () = std::make_shared<Node<NData>>();
+            yylhs.value.as < std::shared_ptr<Node<NData>> > ()->add_child(yystack_[1].value.as < std::shared_ptr<Node<NData>> > ());
+            yylhs.value.as < std::shared_ptr<Node<NData>> > ()->value.type = NData::Type::Iter;
+        }
+#line 1833 "grammar.hpp" // lalr1.cc:919
+    break;
+
+  case 9:
+#line 83 "grammar.yy" // lalr1.cc:919
+    {
+            yylhs.value.as < std::shared_ptr<Node<NData>> > () = std::make_shared<Node<NData>>();
+            yylhs.value.as < std::shared_ptr<Node<NData>> > ()->value.type = NData::Type::Char;
+            yylhs.value.as < std::shared_ptr<Node<NData>> > ()->value.firstpos.insert(yystack_[0].value.as < std::pair<char, size_t> > ());
+            yylhs.value.as < std::shared_ptr<Node<NData>> > ()->value.lastpos.insert(yystack_[0].value.as < std::pair<char, size_t> > ());
+        }
+#line 1844 "grammar.hpp" // lalr1.cc:919
+    break;
+
+  case 10:
+#line 90 "grammar.yy" // lalr1.cc:919
+    {
+            yylhs.value.as < std::shared_ptr<Node<NData>> > () = yystack_[1].value.as < std::shared_ptr<Node<NData>> > ();
+        }
+#line 1852 "grammar.hpp" // lalr1.cc:919
     break;
 
 
-#line 1782 "grammar.cpp" // lalr1.cc:919
+#line 1856 "grammar.hpp" // lalr1.cc:919
             default:
               break;
             }
@@ -1954,67 +2028,67 @@ namespace yy {
   }
 
 
-  const signed char parser::yypact_ninf_ = -3;
+  const signed char parser::yypact_ninf_ = -6;
 
   const signed char parser::yytable_ninf_ = -1;
 
   const signed char
   parser::yypact_[] =
   {
-       5,    -3,     5,    -3,     0,     1,     6,     5,    -3,    -3,
-      -3,    -3,    -3
+      -1,    -6,    -1,    -6,    -5,    -1,    -3,     5,     1,    -1,
+      -6,    -6,    -6,    -6,    -6
   };
 
   const unsigned char
   parser::yydefact_[] =
   {
-       0,     6,     0,     2,     3,     0,     0,     0,     7,     5,
-       1,     8,     4
+       0,     9,     0,     2,     3,     6,     7,     0,     0,     0,
+       5,     8,     1,    10,     4
   };
 
   const signed char
   parser::yypgoto_[] =
   {
-      -3,    -2,    -3,    -3
+      -6,    -2,     3,    -6,    -6,    -6
   };
 
   const signed char
   parser::yydefgoto_[] =
   {
-      -1,     3,     4,     5
+      -1,     3,     4,     5,     6,     7
   };
 
   const unsigned char
   parser::yytable_[] =
   {
-       6,    10,     9,     1,     2,    12,     7,     8,     1,     2,
-       0,    11
+       8,     9,     1,     2,    11,    12,    13,    14,    10
   };
 
-  const signed char
+  const unsigned char
   parser::yycheck_[] =
   {
-       2,     0,     4,     3,     4,     7,     6,     7,     3,     4,
-      -1,     5
+       2,     6,     3,     4,     7,     0,     5,     9,     5
   };
 
   const unsigned char
   parser::yystos_[] =
   {
-       0,     3,     4,     9,    10,    11,     9,     6,     7,     9,
-       0,     5,     9
+       0,     3,     4,     9,    10,    11,    12,    13,     9,     6,
+      10,     7,     0,     5,     9
   };
 
   const unsigned char
   parser::yyr1_[] =
   {
-       0,     8,    11,     9,     9,     9,    10,    10,    10
+       0,     8,    13,     9,     9,    10,    10,    11,    11,    12,
+      12
   };
 
   const unsigned char
   parser::yyr2_[] =
   {
-       0,     2,     1,     1,     3,     2,     1,     2,     3
+       0,     2,     1,     1,     3,     2,     1,     1,     2,     1,
+       3
   };
 
 
@@ -2025,14 +2099,15 @@ namespace yy {
   const parser::yytname_[] =
   {
   "END_OF_FILE", "error", "$undefined", "LETTER", "OPEN", "CLOSE",
-  "UNION", "ITER", "$accept", "EXPR", "TERM", "PRINT", YY_NULLPTR
+  "UNION", "ITER", "$accept", "U", "C", "I", "L", "GETROOT", YY_NULLPTR
   };
 
 
   const unsigned char
   parser::yyrline_[] =
   {
-       0,    16,    16,    19,    20,    21,    24,    25,    26
+       0,    26,    26,    32,    36,    49,    56,    66,    70,    82,
+      89
   };
 
   // Print the state stack on the debug stream.
@@ -2067,8 +2142,8 @@ namespace yy {
 
 
 } // yy
-#line 2071 "grammar.cpp" // lalr1.cc:1242
-#line 89 "grammar.yy" // lalr1.cc:1243
+#line 2146 "grammar.hpp" // lalr1.cc:1242
+#line 160 "grammar.yy" // lalr1.cc:1243
 
 
 namespace yy
@@ -2080,8 +2155,8 @@ namespace yy
   }
 }
 
-int main ()
-{
-  yy::parser parse;
-  return parse(std::cin);
-}
+//int main ()
+//{
+//  yy::parser parse(std::cin);
+//  return parse();
+//}
