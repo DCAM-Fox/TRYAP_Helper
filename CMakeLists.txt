@@ -23,9 +23,9 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -Wextra -O3 --std=
 
 # Библиотеки.
 target_link_libraries(Rubbur m)
-#target_link_libraries(Rubbur pthread)
-#target_link_libraries(Rubbur sfml-system)
-#target_link_libraries(Rubbur sfml-graphics)
+target_link_libraries(Rubbur pthread)
+target_link_libraries(Rubbur sfml-system)
+target_link_libraries(Rubbur sfml-graphics)
 #target_link_libraries(Rubbur sfml-audio)
-#target_link_libraries(Rubbur sfml-window)
+target_link_libraries(Rubbur sfml-window)
 

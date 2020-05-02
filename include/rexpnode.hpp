@@ -18,6 +18,7 @@ struct NData
     std::set<std::pair<char, size_t>> firstpos;
     std::set<std::pair<char, size_t>> lastpos;
 
+    int depth = 0; //глубина поддерева
     //перечисляемый тип
     enum class Type
    {
@@ -40,6 +41,7 @@ void calculate(Node<NData>& place)
         case NData::Type::Char:
         {
             place.value.is_nullable = false;
+            place.value.depth = 0;
             break;
         }
         case NData::Type::Conc:
@@ -74,6 +76,15 @@ void calculate(Node<NData>& place)
             }
             /*вычисляем nullable*/
             place.value.is_nullable = c1->value.is_nullable && c2->value.is_nullable;
+            /*вычисляем глубину*/
+            if (c1->value.depth > c2->value.depth)
+            {
+                place.value.depth = 1 + c1->value.depth;
+            }
+            else
+            {
+                place.value.depth = 1 + c2->value.depth;
+            }
             break;
         }
         case NData::Type::Union:
@@ -94,6 +105,15 @@ void calculate(Node<NData>& place)
                            std::inserter(place.value.lastpos, place.value.lastpos.begin()));
             /*вычисляем nullable*/
             place.value.is_nullable = c1->value.is_nullable || c2->value.is_nullable;
+            /*вычисляем глубину*/
+            if (c1->value.depth > c2->value.depth)
+            {
+                place.value.depth = 1 + c1->value.depth;
+            }
+            else
+            {
+                place.value.depth = 1 + c2->value.depth;
+            }
             break;
         }
         case NData::Type::Iter:
@@ -108,6 +128,8 @@ void calculate(Node<NData>& place)
             place.value.lastpos = c1->value.lastpos;
             /*вычисляем nullable*/
             place.value.is_nullable = true;
+            /*вычисляем глубину*/
+            place.value.depth = 1 + c1->value.depth;
             break;
         }
     }
