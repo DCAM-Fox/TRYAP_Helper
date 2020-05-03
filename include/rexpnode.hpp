@@ -7,6 +7,8 @@
 #include "tree.hpp"
 #include <set> //тут реализованы множества
 #include <algorithm>
+#include <unordered_map>
+#include <iostream>
 
 struct NData
 {
@@ -15,9 +17,12 @@ struct NData
     */
     bool is_nullable = false;
 
-    std::set<std::pair<char, size_t>> firstpos;
-    std::set<std::pair<char, size_t>> lastpos;
-
+    std::set<std::pair<size_t, char>> firstpos;
+    std::set<std::pair<size_t, char>> lastpos;
+    /*
+    std::set<size_t> firstpos;
+    std::set<size_t> lastpos;
+    */
     int depth = 0; //глубина поддерева
     //перечисляемый тип
     enum class Type
@@ -124,8 +129,18 @@ void calculate(Node<NData>& place)
             calculate(*c1);
             /*вычисляем firstpos*/
             place.value.firstpos =  c1->value.firstpos;
+            std::cout << "FIRSTPOS: ";
+            for(auto item : place.value.firstpos)
+            {
+                std::cout << "(" << item.first << ";" << item.second << "), " << std::endl;
+            }
             /*вычисляем lastpos*/
             place.value.lastpos = c1->value.lastpos;
+            std::cout << "LASTPOS: ";
+            for(auto item : place.value.lastpos)
+            {
+                std::cout << "(" << item.first << ";" << item.second << "), " << std::endl;
+            }
             /*вычисляем nullable*/
             place.value.is_nullable = true;
             /*вычисляем глубину*/

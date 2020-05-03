@@ -105,20 +105,22 @@ L:       LETTER
     auto yylex(std::istream& stream) -> parser::symbol_type
     {
       static size_t i = 0;
+      /*
+      static size_t max_num = 0;
+      */
 
       //std::string input;
       //cin.getline(input);
 
       while(true)
       {
-        char input = stream.get();
+        char input = 0;
+        if (!stream.get(input))
+        {
+            return parser::make_END_OF_FILE();
+        }       
         switch (input)
         {
-          case '#':
-          {
-            return parser::make_END_OF_FILE ();
-            break;
-          }
           case '(':
           {
             return parser::make_OPEN ();
@@ -147,7 +149,8 @@ L:       LETTER
           default:
           {
             ++i;
-            return parser::make_LETTER(std::make_pair(input, i));
+            //++max_num;
+            return parser::make_LETTER(std::make_pair(i, input));
             break;
           }
         }

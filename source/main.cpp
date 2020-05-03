@@ -5,8 +5,9 @@
 #include <cmath>
 #include "Grexpnode.hpp"
 #include <unordered_map>
+#include <sstream>
 
-#define DEBUG_DRAWTREE
+//#define DEBUG_DRAWTREE
 
 void depthsearch(std::vector<std::shared_ptr<Node<NData>>>& tree, std::shared_ptr<Node<NData>> node)
 {
@@ -134,18 +135,20 @@ void drawtree(std::shared_ptr<Node<NData>> root)
         nodes[i]->circle.setOrigin(nodes[i]->circle.getRadius(), nodes[i]->circle.getRadius()); //чтобы координата центра была положением
         nodes[i]->circle.setPosition(nodes[i]->coords.x, nodes[i]->coords.y);
         nodes[i]->circle.setFillColor(sf::Color::White);
-        nodes[i]->circle.setOutlineColor(sf::Color::Red);
+        //nodes[i]->circle.setOutlineColor(sf::Color::Red);
         nodes[i]->circle.setOutlineThickness(2.0f);
 
         switch (nodes[i]->data->value.type)
         {
             case NData::Type::Char:
             {
+                nodes[i]->circle.setOutlineColor(sf::Color::White);
                 //++i;
                 break;
             }
             case NData::Type::Conc:
             {
+                nodes[i]->circle.setOutlineColor(sf::Color::Red);
                 //первая линия
                 nodes[i]->lines.push_back(std::array<sf::Vertex, 2>());
                 nodes[i]->lines[0][0] = sf::Vertex(nodes[i]->coords);
@@ -173,6 +176,7 @@ void drawtree(std::shared_ptr<Node<NData>> root)
             }
             case NData::Type::Union:
             {
+                nodes[i]->circle.setOutlineColor(sf::Color::Blue);
                 //первая линия
                 nodes[i]->lines.push_back(std::array<sf::Vertex, 2>());
                 nodes[i]->lines[0][0] = sf::Vertex(nodes[i]->coords);
@@ -200,6 +204,7 @@ void drawtree(std::shared_ptr<Node<NData>> root)
             }
             case NData::Type::Iter:
             {
+                nodes[i]->circle.setOutlineColor(sf::Color::Green);
                 //единственная линия
                 nodes[i]->lines.push_back(std::array<sf::Vertex, 2>());
                 nodes[i]->lines[0][0] = sf::Vertex(nodes[i]->coords);
@@ -343,22 +348,114 @@ void drawtree(std::shared_ptr<Node<NData>> root)
     }
 }
 
+size_t makefollow (std::string str, std::vector<std::set<std::pair<size_t, char>>>& followpos)//(std::vector<std::shared_ptr<Node<NData>>>& tree)//, std::shared_ptr<Node<NData>> root)
+{
+    size_t max_pos = 0;
+    for (size_t i = 0; i < str.size(); ++i)
+    {
+        switch (str[i])
+        {
+            case '(' :
+            {
+                break;
+            }
+            case ')' :
+            {
+                break;
+            }
+            case '+' :
+            {
+                break;
+            }
+            default :
+            {
+                max_pos++;
+                break;
+            }
+        }
+    }
+    //создание таблицы followpos (реализована массивом)
+    for (size_t i = 0; i < max_pos; ++i)
+    {
+        followpos.push_back(std::set<std::pair<size_t, char>>());
+    }
+    return max_pos;
+}
+
+void countfollow (std::shared_ptr<Node<NData>> root,  std::vector<std::set<std::pair<size_t, char>>>& followpos, size_t max_pos)
+{
+    switch (root->value.type)
+    {
+        case NData::Type::Conc:
+        {
+            auto c1 = *(root->children.begin());
+            auto c2 = *(++(root->children.begin()));
+            for (size_t i = 0; i < max_pos; ++i)
+            {
+                auto iter = c1->value.lastpos.lower_bound(std::make_pair(i, 0));
+                if ((iter != c1->value.lastpos.end()) && (iter->first == i))
+                {
+                    for (size_t j = 0; j < max_pos; ++j)
+                    {
+                        auto jter = c2->value.firstpos.lower_bound(std::make_pair(j, 0));
+                        if ((jter != c2->value.firstpos.end()) && (jter->first == j))
+                        {
+                            followpos[i].insert(*jter);
+                        }
+                    }
+                }
+            }
+            countfollow (c1, followpos, max_pos);
+            countfollow (c2, followpos, max_pos);
+            break;
+        }
+        case NData::Type::Union:
+        {
+            auto c1 = *(root->children.begin());
+            auto c2 = *(++(root->children.begin()));
+            countfollow(c1, followpos, max_pos);
+            countfollow(c2, followpos, max_pos);
+            break;
+        }
+        case NData::Type::Iter:
+        {
+            auto c1 = *(root->children.begin());
+            for (size_t i = 0; i < max_pos; ++i)
+            {
+                auto iter = c1->value.lastpos.lower_bound(std::make_pair(i, 0));
+                //std::cout << "i = " << i << "; (" << iter->first << ", " << iter->second << ")" << std::endl;
+                if ((iter != c1->value.lastpos.end()) && (iter->first == i))
+                {
+                    for (size_t j = 0; j < max_pos; ++j)
+                    {
+                        auto jter = c1->value.firstpos.lower_bound(std::make_pair(j, 0));
+                        if ((jter != c1->value.firstpos.end()) && (jter->first == j))
+                        {
+                            followpos[i].insert(*jter);
+                        }
+                    }
+                }
+            }
+            countfollow(c1, followpos, max_pos);
+            break;
+        }
+        case NData::Type::Char:
+        {
+            break;
+        }
+    }
+}
+
 int main()
 {
-    // std::shared_ptr<Node<int>> root = std::make_shared<Node<int>>(0);
-    // std::shared_ptr<Node<int>> child1 = std::make_shared<Node<int>>(1);
-    // std::shared_ptr<Node<int>> child2 = std::make_shared<Node<int>>(2);
+    std::string str;
+    std::cin >> str;
+    str = "(" + str + ")#";
 
-    // root->add_child(child1);
-    // root->add_child(child2);
-
-    // for(auto child : root->children) //берет children, идет и перебирает все child'ы из children
-    // {
-    //     std::cout << child->value << ", ";
-    // }
+    std::stringstream stream(str);
 
     std::shared_ptr<Node<NData>> root;
-    yy::parser parse(std::cin, root);
+    yy::parser parse(stream, root);
     parse();
     std::cout << root.get() << std::endl;
     calculate(*root);
@@ -366,6 +463,22 @@ int main()
               << root->value.is_nullable << ' '
               << root->value.lastpos.size() << std::endl;
 
+    std::vector<std::set<std::pair<size_t, char>>> followpos;
+    size_t max_pos = makefollow(str, followpos);
+
+    std::cout << max_pos << std::endl;
+
+    countfollow(root, followpos, max_pos);
+
+    for(size_t i = 0; i < followpos.size(); ++i)
+    {
+        std::cout << "i = " << i;
+        for(auto item : followpos[i])
+        {
+            std::cout << "(" << item.first << ";" << item.second << "), ";
+        }
+        std::cout << std::endl;
+    }
     drawtree(root);
 
     return 0;
