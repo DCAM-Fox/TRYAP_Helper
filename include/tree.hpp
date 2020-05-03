@@ -6,6 +6,7 @@
 
 #include <memory> //хранится объявление умных указателей
 #include <list> //хранятся списки
+#include <vector>
 
 //вершина
 
@@ -44,5 +45,15 @@ public:
     }
 };
 
+template <typename T>
+void depthsearch(std::vector<std::shared_ptr<Node<T>>>& tree, std::shared_ptr<Node<T>> node)
+{
+    tree.push_back(node);
+    for (auto child : node->children)
+    {
+        depthsearch(tree, child);
+    }
+    //    depthsearch(tree, *(++node->children.begin()));
+}
 //lockguard
 #endif
