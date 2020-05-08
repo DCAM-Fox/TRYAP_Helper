@@ -11,6 +11,7 @@
 #include "drawtree.hpp"
 #include "followpos.hpp"
 #include "dfa.hpp"
+#include "drawdfa.hpp"
 
 //#define DEBUG_DRAWTREE
 //#define DEBUG_FOLLOWPOS
@@ -84,7 +85,13 @@ int main()
         }
         std::cout << std::endl;
     }
+    for(size_t i = 0; i < dfa.states.size(); ++i)
+    {
+        std::cout << "Is " << i << " accepting? " << dfa.states[i]->is_accepting << std::endl;
+    }
+
     drawtree(root);
 
+    drawdfa(dfa);
     return 0;
 }

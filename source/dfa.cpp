@@ -1,6 +1,6 @@
 #include "dfa.hpp"
 
-//#define DEBUG_DFA
+#define DEBUG_DFA
 
 void makestart(std::shared_ptr<Node<NData>> root,
                std::vector<std::shared_ptr<DFState>>& states,
@@ -13,7 +13,7 @@ void makestart(std::shared_ptr<Node<NData>> root,
     start->is_start = true;
     start->num = 0;
 
-    if (start->positions.find(std::make_pair(max_pos, '#')) != start->positions.end())
+    if (start->positions.find(std::make_pair((max_pos-1), '#')) != start->positions.end())
     {
         start->is_accepting = true;
     }
@@ -103,12 +103,22 @@ void makestates(std::vector<std::shared_ptr<DFState>>& states,
                         states[s]->is_start = false;
                         states[s]->num = s;
 
-                        if (states[s]->positions.find(std::make_pair(max_pos, '#')) != states[s-1]->positions.end())
+                        #ifdef DEBUG_DFA
+                        for(auto item : states[s]->positions)
+                        {
+                            std::cout << "(" << item.first << ";" << item.second << "), ";
+                        }
+                        std::cout<<std::endl;
+                        #endif
+
+                        if (states[s]->positions.find(std::make_pair((max_pos-1), '#')) != states[s]->positions.end())
                         {
                             states[s]->is_accepting = true;
                         }
 
                         #ifdef DEBUG_DFA
+                        std::cout << "is accepting? " << states[s]->is_accepting << std::endl;
+
                         std::cout << "STATE" << std::endl;
 
                         for(auto item : states[s]->positions)
