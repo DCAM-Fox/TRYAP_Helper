@@ -28,4 +28,4 @@ target_link_libraries(Rubbur sfml-system)
 target_link_libraries(Rubbur sfml-graphics)
 #target_link_libraries(Rubbur sfml-audio)
 target_link_libraries(Rubbur sfml-window)
-
+target_link_libraries(Rubbur X11)

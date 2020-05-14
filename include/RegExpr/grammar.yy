@@ -17,7 +17,7 @@
 %nterm <std::shared_ptr<Node<NData>>> C;
 %nterm <std::shared_ptr<Node<NData>>> I;
 %nterm <std::shared_ptr<Node<NData>>> L;
-%token <std::pair<char, size_t>> LETTER;
+%token <std::pair<size_t, char>> LETTER;
 %token OPEN;
 %token CLOSE;
 %token UNION;
@@ -150,7 +150,7 @@ L:       LETTER
           {
             ++i;
             //++max_num;
-            return parser::make_LETTER(std::make_pair(i, input));
+            return parser::make_LETTER(std::make_pair((i - 1), input));
             break;
           }
         }

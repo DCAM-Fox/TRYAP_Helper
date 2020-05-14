@@ -30,12 +30,124 @@ void makelayout(std::vector<std::shared_ptr<GState>> gstates)
 {
     for(size_t i = 0; i < gstates.size(); ++i)
     {
-        gstates[i]->coords.x = 50*i;
+        gstates[i]->coords.x = 100*i;
         gstates[i]->coords.y = 0;
 
         #ifdef DEBUG_DRAWDFA
         std::cout << "i = " << i << "; coords: (" << gstates[i]->coords.x << ";" << gstates[i]->coords.y << ")" << std::endl;
         #endif
+    }
+}
+
+void makearrows(DFA& dfa, std::vector<std::shared_ptr<GState>>& gstates, std::vector<std::shared_ptr<GArrow>>& arrows, sf::Font font)//, std::vector<std::vector<std::shared_ptr<sf::Text>>>& arrowtext)
+{
+    for(size_t i = 0; i < gstates.size(); ++i)
+    {
+        arrows.push_back(std::make_shared<GArrow>());
+    }
+    /*
+      for(size_t i = 0; i < gstates.size(); ++i)
+      {
+      heads.push_back(std::make_shared<GArrowHead>());
+      }
+    */
+    for(ssize_t i = 0; i < gstates.size(); ++i)
+    {
+        //        size_t num = 0;
+        //arrowtext.push_back(std::vector<std::shared_ptr<sf::Text>>());
+        for(char c = 0; size_t(c) < 256; ++c)
+        {
+            for(ssize_t j = 0; j < gstates.size(); ++j)
+            {
+                if (dfa.transit[256*i + c] == j)
+                {
+                    arrows[i]->lines.push_back(std::array<sf::Vertex, 2>());
+                    arrows[i]->lines.push_back(std::array<sf::Vertex, 2>());
+                    arrows[i]->lines.push_back(std::array<sf::Vertex, 2>());
+
+                    arrows[i]->heads.push_back(GArrowHead());
+                    /*
+                    arrows[i]->text.push_back(std::make_shared<sf::Text>());
+                    arrows[i]->text[arrows[i]->text.size() - 1]->setFont(font); // font is a sf::Font
+                    arrows[i]->text[arrows[i]->text.size() - 1]->setString(std::to_string(c));
+                    arrows[i]->text[arrows[i]->text.size() - 1]->setCharacterSize(20); // in pixels, not points!
+                    arrows[i]->text[arrows[i]->text.size() - 1]->setFillColor(sf::Color::Red);
+                    */
+                    size_t lsize = arrows[i]->lines.size();
+                    ssize_t delta = gstates[j]->coords.x - gstates[i]->coords.x;
+
+                    if((delta != 0) && (delta != 100))
+                    {
+                        arrows[i]->lines[lsize-3][0] = sf::Vertex(gstates[i]->coords);
+                        arrows[i]->lines[lsize-3][1] = sf::Vertex(sf::Vector2f(gstates[i]->coords.x,
+                                                                               gstates[i]->coords.y - abs(delta/5) - 20.0f));
+                        arrows[i]->lines[lsize-2][0] = sf::Vertex(sf::Vector2f(gstates[i]->coords.x,
+                                                                               gstates[i]->coords.y - abs(delta/5) - 20.0f));
+                        arrows[i]->lines[lsize-2][1] = sf::Vertex(sf::Vector2f(gstates[i]->coords.x + (abs(delta) - 20.0f)*(abs(delta)/delta),
+                                                                               gstates[i]->coords.y - abs(delta/5) - 20.0f));
+                        arrows[i]->lines[lsize-1][0] = sf::Vertex(sf::Vector2f(gstates[i]->coords.x + (abs(delta) - 20.0f)*(abs(delta)/delta),
+                                                                               gstates[i]->coords.y - abs(delta/5) - 20.0f));
+                        arrows[i]->lines[lsize-1][1] = sf::Vertex({gstates[i]->coords.x + delta,
+                                gstates[i]->coords.y}); //same as sf vector
+
+                        size_t hsize = arrows[i]->heads.size();
+                        arrows[i]->heads[hsize-1].setOrigin(-20.0, 0);
+                        arrows[i]->heads[hsize-1].setPosition(gstates[j]->coords);
+                        double angle = (180/M_PI)*atan2((arrows[i]->lines[lsize-1][0].position.x - arrows[i]->lines[lsize-1][1].position.x), (arrows[i]->lines[lsize-1][0].position.y - arrows[i]->lines[lsize-1][1].position.y));
+                        arrows[i]->heads[hsize-1].setRotation(-angle+90.0f);
+                    }
+                    else
+                    {
+                        if(delta == 0)
+                        {
+                            arrows[i]->lines[lsize-3][0] = sf::Vertex(gstates[i]->coords);
+                            arrows[i]->lines[lsize-3][1] = sf::Vertex(sf::Vector2f(gstates[i]->coords.x - 20.0f,
+                                                                                   gstates[i]->coords.y + 40.0f));
+                            arrows[i]->lines[lsize-2][0] = sf::Vertex(sf::Vector2f(gstates[i]->coords.x - 20.0f,
+                                                                                   gstates[i]->coords.y + 40.0f));
+                            arrows[i]->lines[lsize-2][1] = sf::Vertex(sf::Vector2f(gstates[i]->coords.x + 20.0f,
+                                                                                   gstates[i]->coords.y + 40.0f));
+                            arrows[i]->lines[lsize-1][0] = sf::Vertex(sf::Vector2f(gstates[i]->coords.x + 20.0f,
+                                                                                   gstates[i]->coords.y + 40.0f));
+                            arrows[i]->lines[lsize-1][1] = sf::Vertex(gstates[i]->coords);
+
+                            size_t hsize = arrows[i]->heads.size();
+                            arrows[i]->heads[hsize-1].setOrigin(-20.0, 0);
+                            arrows[i]->heads[hsize-1].setPosition(gstates[j]->coords);
+                            arrows[i]->heads[hsize-1].setRotation((180/M_PI)*atan(40/20));
+                            /*
+                            arrows[i]->heads[arrows[i]->heads.size() - 1].setRotation((180/M_PI)*atan(40/20));
+                            arrows[i]->heads[arrows[i]->heads.size() - 1].setOrigin(gstates[i]->coords.x + (20 * cos(atan(40/20))),
+                                                                                    gstates[i]->coords.y + (20 * sin(atan(40/20))));
+
+                            arrows[i]->text[arrows[i]->text.size() - 1]->setPosition(sf::Vector2(((arrows[i]->lines[lsize-2][0].position.x + arrows[i]->lines[lsize-2][1].position.x)/2),
+                                                                                                 ((arrows[i]->lines[lsize-2][0].position.y + arrows[i]->lines[lsize-2][1].position.y)/2)));
+                            */
+                        }
+                        else
+                        {
+                            if(delta == 100)
+                            {
+                                arrows[i]->lines[lsize-3][0] = sf::Vertex(gstates[i]->coords);
+                                arrows[i]->lines[lsize-3][1] = sf::Vertex(gstates[i]->coords);
+                                arrows[i]->lines[lsize-2][0] = sf::Vertex(gstates[i]->coords);
+                                arrows[i]->lines[lsize-2][1] = sf::Vertex(sf::Vector2f(gstates[i]->coords.x + delta,
+                                                                                       gstates[i]->coords.y));
+                                arrows[i]->lines[lsize-1][0] = sf::Vertex(sf::Vector2f(gstates[i]->coords.x + delta,
+                                                                                       gstates[i]->coords.y));
+                                arrows[i]->lines[lsize-1][1] = sf::Vertex(sf::Vector2f(gstates[i]->coords.x + delta,
+                                                                                       gstates[i]->coords.y));
+
+                                size_t hsize = arrows[i]->heads.size();
+                                arrows[i]->heads[hsize-1].setOrigin(-20.0, 0);
+                                arrows[i]->heads[hsize-1].setPosition(gstates[j]->coords);
+                                arrows[i]->heads[hsize-1].setRotation(180.0f);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -56,26 +168,28 @@ void drawdfa(DFA& dfa)
     view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f)); //все, что показывает view, будет на экране
     window.setView(view); //задается камера окну
 
-    /*
-      sf::CircleShape circle;
-      circle.setRadius(10.0f);
-      circle.setOrigin(circle.getRadius(), circle.getRadius()); //чтобы координата центра была положением
-      circle.setPosition(10.0f, 20.0f);
-      circle.setFillColor(sf::Color::White);
-      circle.setOutlineColor(sf::Color::Red);
-      circle.setOutlineThickness(2.0f);
-    */
-
-    /*На глубине h запишем место для 2^h вершин; т.е. они будут на расстоянии 50*2^(root.depth - h) друг от друга*/
     std::vector<std::shared_ptr<DFState>> automata;
     std::vector<std::shared_ptr<GState>> gstates;
     std::unordered_map<DFState*, std::shared_ptr<GState>> table;
+    std::vector<std::shared_ptr<GArrow>> arrows;
+    std::vector<std::shared_ptr<GArrowHead>> heads;
+
+    sf::Font font;
+    if (!font.loadFromFile("../../SourceCodePro-Regular.otf"))
+    {
+        std::cout << "ERROR!!!" << std::endl;
+    }
+
+    std::vector<std::shared_ptr<sf::Text>> text;
+    std::vector<std::vector<std::shared_ptr<sf::Text>>> arrowtext;
 
     makeaut(dfa, automata);
 
     makebase(automata, gstates, table);
 
     makelayout(gstates);
+
+    makearrows(dfa, gstates, arrows, font);
 
     for (size_t i = 0; i < gstates.size(); ++i)
     {
@@ -103,102 +217,28 @@ void drawdfa(DFA& dfa)
             gstates[i]->ring.setFillColor(sf::Color::White);
             gstates[i]->ring.setRadius(0.0f);
         }
-        /*
-          switch (gstates[i]->data->value.type)
-          {
-          case NData::Type::Char:
-          {
-          gstates[i]->circle.setOutlineColor(sf::Color::White);
-          //++i;
-          break;
-          }
-          case NData::Type::Conc:
-          {
-          gstates[i]->circle.setOutlineColor(sf::Color::Red);
-          //первая линия
-          gstates[i]->lines.push_back(std::array<sf::Vertex, 2>());
-          gstates[i]->lines[0][0] = sf::Vertex(gstates[i]->coords);
-          gstates[i]->lines[0][1] = sf::Vertex(sf::Vector2f(gstates[i]->coords.x - (25.f * pow(2, (gstates[i]->data->value.depth))),
-          gstates[i]->coords.y + (50.f * pow(2, (gstates[i]->data->value.depth)))));
-
-          #ifdef DEBUG_DRAWTREE
-          std::cout << "CONC, C1 = (" << gstates[i]->lines[0][0].position.x << ";" << gstates[i]->lines[0][0].position.y << ") -> ("
-          << gstates[i]->lines[0][1].position.x << ";" << gstates[i]->lines[0][1].position.y << ")" << std::endl;
-          #endif
-
-          //вторая линия
-          gstates[i]->lines.push_back(std::array<sf::Vertex, 2>());
-          gstates[i]->lines[1][0] = sf::Vertex(gstates[i]->coords);
-          gstates[i]->lines[1][1] = sf::Vertex(sf::Vector2f(gstates[i]->coords.x + (25.f * pow(2, (gstates[i]->data->value.depth))),
-          gstates[i]->coords.y + (50.f * pow(2, (gstates[i]->data->value.depth)))));
-
-          #ifdef DEBUG_DRAWTREE
-          std::cout << "CONC, C1 = (" << gstates[i]->lines[1][0].position.x << ";" << gstates[i]->lines[1][0].position.y << ") -> ("
-          << gstates[i]->lines[1][1].position.x << ";" << gstates[i]->lines[1][1].position.y << ")" << std::endl;
-          #endif
-
-          //++i;
-          break;
-          }
-          case NData::Type::Union:
-          {
-          gstates[i]->circle.setOutlineColor(sf::Color::Blue);
-          //первая линия
-          gstates[i]->lines.push_back(std::array<sf::Vertex, 2>());
-          gstates[i]->lines[0][0] = sf::Vertex(gstates[i]->coords);
-          gstates[i]->lines[0][1] = sf::Vertex(sf::Vector2f(gstates[i]->coords.x - (25.f * pow(2, (gstates[i]->data->value.depth))),
-          gstates[i]->coords.y + (50.f * pow(2, (gstates[i]->data->value.depth)))));
-
-          #ifdef DEBUG_DRAWTREE
-          std::cout << "UNION, C1 = (" << gstates[i]->lines[0][0].position.x << ";" << gstates[i]->lines[0][0].position.y << ") -> ("
-          << gstates[i]->lines[0][1].position.x << ";" << gstates[i]->lines[0][1].position.y << ")" << std::endl;
-          #endif
-
-          //вторая линия
-          gstates[i]->lines.push_back(std::array<sf::Vertex, 2>());
-          gstates[i]->lines[1][0] = sf::Vertex(gstates[i]->coords);
-          gstates[i]->lines[1][1] = sf::Vertex(sf::Vector2f(gstates[i]->coords.x + (25.f * pow(2, (gstates[i]->data->value.depth))),
-          gstates[i]->coords.y + (50.f * pow(2, (gstates[i]->data->value.depth)))));
-
-          #ifdef DEBUG_DRAWTREE
-          std::cout << "UNION, C1 = (" << gstates[i]->lines[1][0].position.x << ";" << gstates[i]->lines[1][0].position.y << ") -> ("
-          << gstates[i]->lines[1][1].position.x << ";" << gstates[i]->lines[1][1].position.y << ")" << std::endl;
-          #endif
-
-          //++i;
-          break;
-          }
-          case NData::Type::Iter:
-          {
-          gstates[i]->circle.setOutlineColor(sf::Color::Green);
-          //единственная линия
-          gstates[i]->lines.push_back(std::array<sf::Vertex, 2>());
-          gstates[i]->lines[0][0] = sf::Vertex(gstates[i]->coords);
-          gstates[i]->lines[0][1] = sf::Vertex(sf::Vector2f(gstates[i]->coords.x,
-          gstates[i]->coords.y + (50.f *  pow(2, (gstates[i]->data->value.depth)))));
-          //хлам
-          gstates[i]->lines.push_back(std::array<sf::Vertex, 2>());
-          gstates[i]->lines[1][0] = sf::Vertex(gstates[i]->coords);
-          gstates[i]->lines[1][1] = sf::Vertex(gstates[i]->coords);
-
-          #ifdef DEBUG_DRAWTREE
-          std::cout << "ITER, CHILD = (" << gstates[i]->lines[0][0].position.x << ";" << gstates[i]->lines[0][0].position.y << ") -> ("
-          << gstates[i]->lines[0][1].position.x << ";" << gstates[i]->lines[0][1].position.y << ")" << std::endl;
-          #endif
-
-          //++i;
-          break;
-          }
-          }
-
-          }*/
-        /*
-          {
-          sf::Vertex(sf::Vector2f(10.f, 10.f)),
-          sf::Vertex(sf::Vector2f(150.f, 150.f))
-          };
-        */
     }
+
+    for(size_t i = 0; i < gstates.size(); ++i)
+    {
+        text.push_back(std::make_shared<sf::Text>());
+        // select the font
+        text[i]->setFont(font); // font is a sf::Font
+
+        // set the string to display
+        text[i]->setString(std::to_string(i));
+
+        // set the character size
+        text[i]->setCharacterSize(20); // in pixels, not points!
+
+        // set the color
+        text[i]->setFillColor(sf::Color::Red);
+        text[i]->setPosition(sf::Vector2(gstates[i]->coords.x - 5.0f, gstates[i]->coords.y - 15.0f));
+    }
+
+    // set the text style
+    //text.setStyle(sf::Text::Bold | sf::Text::Underlined);
+
     sf::Vector2f mouse_position; //положение мыши
     sf::Event window_event; //событие мыши
     while (window.isOpen()) //пока открыто окно
@@ -301,19 +341,31 @@ void drawdfa(DFA& dfa)
 
         for (size_t i = 0; i < gstates.size(); ++i)
         {
-            /*
-            //рисование обеих линий
-            for (size_t j = 0; j < gstates[i]->lines.size(); ++j)
+            //рисование линий
+            for (size_t j = 0; j < arrows[i]->lines.size(); ++j)
             {
-            window.draw(gstates[i]->lines[j].data(), 2, sf::Lines);
+                window.draw(arrows[i]->lines[j].data(), 2, sf::Lines);
             }
-            */
+            for(size_t j = 0; j < arrows[i]->heads.size(); ++j)
+            {
+                window.draw(arrows[i]->heads[j]);
+            }
+            for(size_t j = 0; j < arrows[i]->text.size(); ++j)
+            {
+                window.draw(*(arrows[i]->text[j]));
+            }
+        }
+        for(size_t i = 0; i < gstates.size(); ++i)
+        {
             #ifdef DEBUG_DRAWDFA
             std::cout << i << ": circle: (" << gstates[i]->coords.x << ";" << gstates[i]->coords.y << "), ring: "<< gstates[i]->ring.getRadius() << std::endl;
             #endif
             window.draw(gstates[i]->circle);
             window.draw(gstates[i]->ring);
+
+            window.draw(*text[i]);
         }
+        //window.draw(text);
 
         //window.draw(circle);
         window.display();

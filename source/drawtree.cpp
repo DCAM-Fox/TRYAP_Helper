@@ -74,6 +74,12 @@ void drawtree(std::shared_ptr<Node<NData>> root)
     sf::RenderWindow window; //создается окно
     sf::ContextSettings context; //какие-то связанные настройки
 
+    context.antialiasingLevel = 0;
+    context.depthBits = 24;
+    context.stencilBits = 8;
+    context.majorVersion = 3;
+    context.minorVersion = 0;
+
     int scale_base = 2; //изменение масштаба
     int scale_power = 0; //изменение масштаба
 

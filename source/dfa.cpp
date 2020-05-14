@@ -1,6 +1,6 @@
 #include "dfa.hpp"
 
-#define DEBUG_DFA
+//#define DEBUG_DFA
 
 void makestart(std::shared_ptr<Node<NData>> root,
                std::vector<std::shared_ptr<DFState>>& states,
@@ -14,6 +14,7 @@ void makestart(std::shared_ptr<Node<NData>> root,
     start->num = 0;
 
     if (start->positions.find(std::make_pair((max_pos-1), '#')) != start->positions.end())
+        //if (start->positions.find(std::make_pair((max_pos), '#')) != start->positions.end())
     {
         start->is_accepting = true;
     }
@@ -111,7 +112,8 @@ void makestates(std::vector<std::shared_ptr<DFState>>& states,
                         std::cout<<std::endl;
                         #endif
 
-                        if (states[s]->positions.find(std::make_pair((max_pos-1), '#')) != states[s]->positions.end())
+                       if (states[s]->positions.find(std::make_pair((max_pos-1), '#')) != states[s]->positions.end())
+                        //                        if (states[s]->positions.find(std::make_pair((max_pos), '#')) != states[s]->positions.end())
                         {
                             states[s]->is_accepting = true;
                         }

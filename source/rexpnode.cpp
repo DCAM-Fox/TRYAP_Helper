@@ -8,6 +8,7 @@ void calculate(Node<NData>& place)
         {
             place.value.is_nullable = false;
             place.value.depth = 0;
+            //            place.value.name = 
             break;
         }
         case NData::Type::Conc:

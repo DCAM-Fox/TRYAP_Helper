@@ -19,6 +19,12 @@ size_t makefollow (std::string str, std::vector<std::set<std::pair<size_t, char>
             {
                 break;
             }
+            ////////////
+            case '*' :
+            {
+                break;
+            }
+            /////////////////////////
             default :
             {
                 max_pos++;
@@ -38,13 +44,13 @@ void countfollow (std::shared_ptr<Node<NData>> root,  std::vector<std::set<std::
 {
     switch (root->value.type)
     {
-        case NData::Type::Conc:
+        case NData::Type::Conc: //if concatenation
         {
-            auto c1 = *(root->children.begin());
-            auto c2 = *(++(root->children.begin()));
-            for (size_t i = 0; i < max_pos; ++i)
+            auto c1 = *(root->children.begin()); //first child
+            auto c2 = *(++(root->children.begin())); //second child
+            for (size_t i = 0; i < max_pos; ++i) //while going
             {
-                auto iter = c1->value.lastpos.lower_bound(std::make_pair(i, 0));
+                auto iter = c1->value.lastpos.lower_bound(std::make_pair(i, 0)); //if exists position, symbol
                 if ((iter != c1->value.lastpos.end()) && (iter->first == i))
                 {
                     for (size_t j = 0; j < max_pos; ++j)

@@ -3,6 +3,7 @@
 #include <cmath>
 #include <unordered_map>
 #include <sstream>
+#include <thread>
 
 #include "tree.hpp"
 #include "grammar.hpp"
@@ -13,15 +14,22 @@
 #include "dfa.hpp"
 #include "drawdfa.hpp"
 
+//#include <X11/Xlib.h>
+
 //#define DEBUG_DRAWTREE
 //#define DEBUG_FOLLOWPOS
 //#define DEBUG_ROOT
+//#define DEBUG_AUT
 
 int main()
 {
+    //    XInitThreads();
+
     std::string str;
     std::cin >> str;
     str = "(" + str + ")#";
+
+    std::cout << str << std::endl;
 
     std::stringstream stream(str);
 
@@ -41,12 +49,14 @@ int main()
               << root->value.lastpos.size() << std::endl;
     #endif
 
+
+
     std::vector<std::set<std::pair<size_t, char>>> followpos;
     size_t max_pos = makefollow(str, followpos);
 
-    #ifdef DEBUG_FOLLOWPOS
+    //fdef DEBUG_FOLLOWPOS
     std::cout << max_pos << std::endl;
-    #endif
+    //#endif
 
     countfollow(root, followpos, max_pos);
 
@@ -68,6 +78,7 @@ int main()
     makestates(dfa.states, dfa.transit, max_pos, followpos);
     makefinal(dfa.states, dfa.fin);
 
+    #ifdef DEBUG_AUT
     std::cout << "AUTOMATA" << std::endl;
     std::cout << "   | ";
 
@@ -85,13 +96,23 @@ int main()
         }
         std::cout << std::endl;
     }
+    #endif
+
     for(size_t i = 0; i < dfa.states.size(); ++i)
     {
         std::cout << "Is " << i << " accepting? " << dfa.states[i]->is_accepting << std::endl;
     }
 
+    //std::thread dfa_thread(drawdfa, std::ref(dfa));
+
     drawtree(root);
 
+    /*
+    if (dfa_thread.joinable())
+    {
+        dfa_thread.join();
+    }
+    */
     drawdfa(dfa);
     return 0;
 }

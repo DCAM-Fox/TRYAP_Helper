@@ -340,7 +340,7 @@ namespace yy {
     union union_type
     {
       // LETTER
-      char dummy1[sizeof (std::pair<char, size_t>)];
+      char dummy1[sizeof (std::pair<size_t, char>)];
 
       // U
       // C
@@ -442,12 +442,12 @@ namespace yy {
       {}
 #endif
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, std::pair<char, size_t>&& v)
+      basic_symbol (typename Base::kind_type t, std::pair<size_t, char>&& v)
         : Base (t)
         , value (std::move (v))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const std::pair<char, size_t>& v)
+      basic_symbol (typename Base::kind_type t, const std::pair<size_t, char>& v)
         : Base (t)
         , value (v)
       {}
@@ -487,7 +487,7 @@ namespace yy {
 switch (yytype)
     {
       case 3: // LETTER
-        value.template destroy< std::pair<char, size_t> > ();
+        value.template destroy< std::pair<size_t, char> > ();
         break;
 
       case 9: // U
@@ -583,13 +583,13 @@ switch (yytype)
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
-      symbol_type (int tok, std::pair<char, size_t> v)
+      symbol_type (int tok, std::pair<size_t, char> v)
         : super_type(token_type (tok), std::move (v))
       {
         YYASSERT (tok == token::LETTER);
       }
 #else
-      symbol_type (int tok, const std::pair<char, size_t>& v)
+      symbol_type (int tok, const std::pair<size_t, char>& v)
         : super_type(token_type (tok), v)
       {
         YYASSERT (tok == token::LETTER);
@@ -649,14 +649,14 @@ switch (yytype)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_LETTER (std::pair<char, size_t> v)
+      make_LETTER (std::pair<size_t, char> v)
       {
         return symbol_type (token::LETTER, std::move (v));
       }
 #else
       static
       symbol_type
-      make_LETTER (const std::pair<char, size_t>& v)
+      make_LETTER (const std::pair<size_t, char>& v)
       {
         return symbol_type (token::LETTER, v);
       }
@@ -1096,7 +1096,7 @@ switch (yytype)
     switch (this->type_get ())
     {
       case 3: // LETTER
-        value.move< std::pair<char, size_t> > (std::move (that.value));
+        value.move< std::pair<size_t, char> > (std::move (that.value));
         break;
 
       case 9: // U
@@ -1121,7 +1121,7 @@ switch (yytype)
     switch (this->type_get ())
     {
       case 3: // LETTER
-        value.copy< std::pair<char, size_t> > (YY_MOVE (that.value));
+        value.copy< std::pair<size_t, char> > (YY_MOVE (that.value));
         break;
 
       case 9: // U
@@ -1154,7 +1154,7 @@ switch (yytype)
     switch (this->type_get ())
     {
       case 3: // LETTER
-        value.move< std::pair<char, size_t> > (YY_MOVE (s.value));
+        value.move< std::pair<size_t, char> > (YY_MOVE (s.value));
         break;
 
       case 9: // U
@@ -1287,7 +1287,7 @@ switch (yytype)
           {
             ++i;
             //++max_num;
-            return parser::make_LETTER(std::make_pair(i, input));
+            return parser::make_LETTER(std::make_pair((i - 1), input));
             break;
           }
         }
@@ -1440,7 +1440,7 @@ namespace yy {
     switch (that.type_get ())
     {
       case 3: // LETTER
-        value.YY_MOVE_OR_COPY< std::pair<char, size_t> > (YY_MOVE (that.value));
+        value.YY_MOVE_OR_COPY< std::pair<size_t, char> > (YY_MOVE (that.value));
         break;
 
       case 9: // U
@@ -1466,7 +1466,7 @@ namespace yy {
     switch (that.type_get ())
     {
       case 3: // LETTER
-        value.move< std::pair<char, size_t> > (YY_MOVE (that.value));
+        value.move< std::pair<size_t, char> > (YY_MOVE (that.value));
         break;
 
       case 9: // U
@@ -1492,7 +1492,7 @@ namespace yy {
     switch (that.type_get ())
     {
       case 3: // LETTER
-        value.move< std::pair<char, size_t> > (that.value);
+        value.move< std::pair<size_t, char> > (that.value);
         break;
 
       case 9: // U
@@ -1747,7 +1747,7 @@ namespace yy {
       switch (yyr1_[yyn])
     {
       case 3: // LETTER
-        yylhs.value.emplace< std::pair<char, size_t> > ();
+        yylhs.value.emplace< std::pair<size_t, char> > ();
         break;
 
       case 9: // U
@@ -1840,8 +1840,8 @@ namespace yy {
     {
             yylhs.value.as < std::shared_ptr<Node<NData>> > () = std::make_shared<Node<NData>>();
             yylhs.value.as < std::shared_ptr<Node<NData>> > ()->value.type = NData::Type::Char;
-            yylhs.value.as < std::shared_ptr<Node<NData>> > ()->value.firstpos.insert(yystack_[0].value.as < std::pair<char, size_t> > ());
-            yylhs.value.as < std::shared_ptr<Node<NData>> > ()->value.lastpos.insert(yystack_[0].value.as < std::pair<char, size_t> > ());
+            yylhs.value.as < std::shared_ptr<Node<NData>> > ()->value.firstpos.insert(yystack_[0].value.as < std::pair<size_t, char> > ());
+            yylhs.value.as < std::shared_ptr<Node<NData>> > ()->value.lastpos.insert(yystack_[0].value.as < std::pair<size_t, char> > ());
         }
 #line 1847 "grammar.hpp" // lalr1.cc:919
     break;

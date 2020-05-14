@@ -45,7 +45,7 @@ public:
     }
 };
 
-template <typename T>
+template <typename T> //это шаблон, раздельно не компилируется!
 void depthsearch(std::vector<std::shared_ptr<Node<T>>>& tree, std::shared_ptr<Node<T>> node)
 {
     tree.push_back(node);
