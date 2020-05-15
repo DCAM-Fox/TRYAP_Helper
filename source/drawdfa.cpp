@@ -39,40 +39,44 @@ void makelayout(std::vector<std::shared_ptr<GState>> gstates)
     }
 }
 
-void makearrows(DFA& dfa, std::vector<std::shared_ptr<GState>>& gstates, std::vector<std::shared_ptr<GArrow>>& arrows, sf::Font font)//, std::vector<std::vector<std::shared_ptr<sf::Text>>>& arrowtext)
+void makearrows(DFA& dfa, std::vector<std::shared_ptr<GState>>& gstates, std::vector<std::shared_ptr<GArrow>>& arrows, sf::Font& font)//, std::vector<std::vector<std::shared_ptr<sf::Text>>>& arrowtext)
 {
     for(size_t i = 0; i < gstates.size(); ++i)
     {
         arrows.push_back(std::make_shared<GArrow>());
     }
-    /*
-      for(size_t i = 0; i < gstates.size(); ++i)
-      {
-      heads.push_back(std::make_shared<GArrowHead>());
-      }
-    */
-    for(ssize_t i = 0; i < gstates.size(); ++i)
+    std::vector<size_t> counts;
+    for(size_t i = 0; i < gstates.size(); ++i)
     {
-        //        size_t num = 0;
-        //arrowtext.push_back(std::vector<std::shared_ptr<sf::Text>>());
-        for(char c = 0; size_t(c) < 256; ++c)
+        for(size_t j = 0; j < gstates.size(); ++j)
         {
-            for(ssize_t j = 0; j < gstates.size(); ++j)
+            counts.push_back(0);
+        }
+        //arrowtext.push_back(std::vector<std::shared_ptr<sf::Text>>());
+        for(size_t c = 0; c < 256; ++c)
+        {
+            for(size_t j = 0; j < gstates.size(); ++j)
             {
-                if (dfa.transit[256*i + c] == j)
+                char ch = static_cast<char>(c);
+                if ((dfa.transit[256*i + c] >= 0) && (static_cast<size_t>(dfa.transit[256*i + c]) == j))
                 {
                     arrows[i]->lines.push_back(std::array<sf::Vertex, 2>());
                     arrows[i]->lines.push_back(std::array<sf::Vertex, 2>());
                     arrows[i]->lines.push_back(std::array<sf::Vertex, 2>());
 
                     arrows[i]->heads.push_back(GArrowHead());
-                    /*
-                    arrows[i]->text.push_back(std::make_shared<sf::Text>());
-                    arrows[i]->text[arrows[i]->text.size() - 1]->setFont(font); // font is a sf::Font
-                    arrows[i]->text[arrows[i]->text.size() - 1]->setString(std::to_string(c));
-                    arrows[i]->text[arrows[i]->text.size() - 1]->setCharacterSize(20); // in pixels, not points!
-                    arrows[i]->text[arrows[i]->text.size() - 1]->setFillColor(sf::Color::Red);
-                    */
+
+                    sf::Text arrowtext;
+
+                    arrowtext.setFont(font); // font is a sf::Font
+                    arrowtext.setString(std::string(1, ch)); // std::to_string(ch));
+                    arrowtext.setCharacterSize(15); // in pixels, not points!
+                    arrowtext.setFillColor(sf::Color::Red);
+
+                    //size_t tsize = arrows[i]->text.size();
+
+                    arrows[i]->text.push_back(arrowtext);
+
                     size_t lsize = arrows[i]->lines.size();
                     ssize_t delta = gstates[j]->coords.x - gstates[i]->coords.x;
 
@@ -115,14 +119,6 @@ void makearrows(DFA& dfa, std::vector<std::shared_ptr<GState>>& gstates, std::ve
                             arrows[i]->heads[hsize-1].setOrigin(-20.0, 0);
                             arrows[i]->heads[hsize-1].setPosition(gstates[j]->coords);
                             arrows[i]->heads[hsize-1].setRotation((180/M_PI)*atan(40/20));
-                            /*
-                            arrows[i]->heads[arrows[i]->heads.size() - 1].setRotation((180/M_PI)*atan(40/20));
-                            arrows[i]->heads[arrows[i]->heads.size() - 1].setOrigin(gstates[i]->coords.x + (20 * cos(atan(40/20))),
-                                                                                    gstates[i]->coords.y + (20 * sin(atan(40/20))));
-
-                            arrows[i]->text[arrows[i]->text.size() - 1]->setPosition(sf::Vector2(((arrows[i]->lines[lsize-2][0].position.x + arrows[i]->lines[lsize-2][1].position.x)/2),
-                                                                                                 ((arrows[i]->lines[lsize-2][0].position.y + arrows[i]->lines[lsize-2][1].position.y)/2)));
-                            */
                         }
                         else
                         {
@@ -145,6 +141,8 @@ void makearrows(DFA& dfa, std::vector<std::shared_ptr<GState>>& gstates, std::ve
                             }
                         }
                     }
+                    arrows[i]->text[arrows[i]->text.size() - 1].setPosition((((arrows[i]->lines[lsize-2][0].position.x + arrows[i]->lines[lsize-2][1].position.x)/2)+20*counts[i * gstates.size() + j]), (arrows[i]->lines[lsize-2][0].position.y + arrows[i]->lines[lsize-2][1].position.y)/2);
+                    ++counts[i*gstates.size() + j];
                 }
             }
         }
@@ -180,8 +178,9 @@ void drawdfa(DFA& dfa)
         std::cout << "ERROR!!!" << std::endl;
     }
 
-    std::vector<std::shared_ptr<sf::Text>> text;
-    std::vector<std::vector<std::shared_ptr<sf::Text>>> arrowtext;
+    std::vector<sf::Text> text;
+    //std::vector<std::shared_ptr<sf::Text>> text;
+    //    std::vector<std::vector<std::shared_ptr<sf::Text>>> arrowtext;
 
     makeaut(dfa, automata);
 
@@ -221,19 +220,19 @@ void drawdfa(DFA& dfa)
 
     for(size_t i = 0; i < gstates.size(); ++i)
     {
-        text.push_back(std::make_shared<sf::Text>());
+        text.push_back(sf::Text());
         // select the font
-        text[i]->setFont(font); // font is a sf::Font
+        text[i].setFont(font); // font is a sf::Font
 
         // set the string to display
-        text[i]->setString(std::to_string(i));
+        text[i].setString(std::to_string(i));
 
         // set the character size
-        text[i]->setCharacterSize(20); // in pixels, not points!
+        text[i].setCharacterSize(20); // in pixels, not points!
 
         // set the color
-        text[i]->setFillColor(sf::Color::Red);
-        text[i]->setPosition(sf::Vector2(gstates[i]->coords.x - 5.0f, gstates[i]->coords.y - 15.0f));
+        text[i].setFillColor(sf::Color::Red);
+        text[i].setPosition(sf::Vector2(gstates[i]->coords.x - 5.0f, gstates[i]->coords.y - 15.0f));
     }
 
     // set the text style
@@ -352,7 +351,7 @@ void drawdfa(DFA& dfa)
             }
             for(size_t j = 0; j < arrows[i]->text.size(); ++j)
             {
-                window.draw(*(arrows[i]->text[j]));
+                window.draw(arrows[i]->text[j]);
             }
         }
         for(size_t i = 0; i < gstates.size(); ++i)
@@ -363,7 +362,7 @@ void drawdfa(DFA& dfa)
             window.draw(gstates[i]->circle);
             window.draw(gstates[i]->ring);
 
-            window.draw(*text[i]);
+            window.draw(text[i]);
         }
         //window.draw(text);
 

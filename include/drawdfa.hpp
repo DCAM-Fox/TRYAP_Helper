@@ -15,7 +15,7 @@ void makebase(std::vector<std::shared_ptr<DFState>>& automata, std::vector<std::
 
 void makelayout(std::vector<std::shared_ptr<GState>> states);
 
-void makearrows(DFA& dfa, std::vector<std::shared_ptr<GState>>& gstates, std::vector<std::shared_ptr<GArrow>>& arrows, sf::Font font);
+void makearrows(DFA& dfa, std::vector<std::shared_ptr<GState>>& gstates, std::vector<std::shared_ptr<GArrow>>& arrows, sf::Font& font);
 
 void drawdfa(DFA& dfa);
 //lockguard

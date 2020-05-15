@@ -23,7 +23,7 @@
 
 int main()
 {
-    //    XInitThreads();
+    //XInitThreads();
 
     std::string str;
     std::cin >> str;
@@ -54,9 +54,9 @@ int main()
     std::vector<std::set<std::pair<size_t, char>>> followpos;
     size_t max_pos = makefollow(str, followpos);
 
-    //fdef DEBUG_FOLLOWPOS
+    #ifdef DEBUG_FOLLOWPOS
     std::cout << max_pos << std::endl;
-    //#endif
+    #endif
 
     countfollow(root, followpos, max_pos);
 

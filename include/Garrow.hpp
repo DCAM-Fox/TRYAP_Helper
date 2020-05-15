@@ -28,7 +28,7 @@ public:
     //sf::RectangleShape line;
     std::vector<std::array<sf::Vertex, 2>> lines; //линии
     std::vector<GArrowHead> heads;
-    std::vector<std::shared_ptr<sf::Text>> text; //надпись над линией
+    std::vector<sf::Text> text; //надпись над линией
     //конструктор
     GArrow() { }
     //деструктор
