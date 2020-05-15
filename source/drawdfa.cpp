@@ -1,4 +1,5 @@
 #include "drawdfa.hpp"
+#include <TGUI/TGUI.hpp>
 
 //#define DEBUG_DRAWDFA
 
@@ -154,6 +155,17 @@ void drawdfa(DFA& dfa)
     sf::View view; // Окно просмотра.
     sf::RenderWindow window; //создается окно
     sf::ContextSettings context; //какие-то связанные настройки
+    ////////////////
+    tgui::Gui gui{window};
+
+    auto editBox = tgui::EditBox::create();
+    //editBox->setRenderer(theme.getRenderer("EditBox"));
+    editBox->setSize(300, 30);
+    editBox->setTextSize(20);
+    editBox->setPosition(10, 270);
+    editBox->setDefaultText("Click to edit text...");
+    gui.add(editBox);
+    //////////////////////
 
     int scale_base = 2; //изменение масштаба
     int scale_power = 0; //изменение масштаба
@@ -326,6 +338,7 @@ void drawdfa(DFA& dfa)
                     break;
                 }
             }
+            gui.handleEvent(window_event);
         }
 
         if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) && window.hasFocus()) //зажатая клавиша мыши
@@ -365,6 +378,7 @@ void drawdfa(DFA& dfa)
             window.draw(text[i]);
         }
         //window.draw(text);
+        gui.draw();
 
         //window.draw(circle);
         window.display();

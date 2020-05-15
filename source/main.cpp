@@ -13,6 +13,7 @@
 #include "followpos.hpp"
 #include "dfa.hpp"
 #include "drawdfa.hpp"
+#include "startscreen.hpp"
 
 //#include <X11/Xlib.h>
 
@@ -105,6 +106,8 @@ int main()
 
     //std::thread dfa_thread(drawdfa, std::ref(dfa));
 
+    drawstartscreen();
+
     drawtree(root);
 
     /*
@@ -113,6 +116,8 @@ int main()
         dfa_thread.join();
     }
     */
+
     drawdfa(dfa);
+
     return 0;
 }
