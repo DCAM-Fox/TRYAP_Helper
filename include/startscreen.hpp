@@ -10,6 +10,6 @@
 #include "Gstate.hpp"
 #include "Garrow.hpp"
 
-void drawstartscreen();// (sf::Font font);
+void drawstartscreen(std::string& str);// (sf::Font font);
 //lockguard
 #endif

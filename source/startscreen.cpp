@@ -1,8 +1,9 @@
 #include "startscreen.hpp"
 
-#include<TGUI/TGUI.hpp>
+#include <TGUI/TGUI.hpp>
+#include <string.h>
 
-void drawstartscreen()//(sf::Font font)
+void drawstartscreen(std::string& str)//(sf::Font font)
 {
     sf::View view; // Окно просмотра.
     sf::RenderWindow window; //создается окно
@@ -127,6 +128,17 @@ void drawstartscreen()//(sf::Font font)
                         {
                             break;
                         }
+                        ///////
+                        case sf::Keyboard::Enter: //какая-то клавиша
+                        {
+                            const sf::String& edinput = editBox->getText();
+                            std::string in_put = edinput;
+                            std::cout << in_put << std::endl;
+                            str = in_put;
+                            window.close();
+                            break;
+                        }
+                        ////////////
                         default:
                         {
                             break;

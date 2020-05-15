@@ -27,8 +27,14 @@ int main()
     //XInitThreads();
 
     std::string str;
+
+    drawstartscreen(str);
+
+    /*
     std::cin >> str;
+    */
     str = "(" + str + ")#";
+
 
     std::cout << str << std::endl;
 
@@ -106,7 +112,7 @@ int main()
 
     //std::thread dfa_thread(drawdfa, std::ref(dfa));
 
-    drawstartscreen();
+    //drawstartscreen();
 
     drawtree(root);
 
