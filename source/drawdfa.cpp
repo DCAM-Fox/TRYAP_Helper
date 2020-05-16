@@ -23,7 +23,7 @@ void makebase(std::vector<std::shared_ptr<DFState>>& automata, std::vector<std::
     }
 }
 
-void makelayout(std::vector<std::shared_ptr<GState>> gstates)
+void makelayout(std::vector<std::shared_ptr<GState>> gstates, std::vector<sf::Text>& text, sf::Font& font)
 {
     for(size_t i = 0; i < gstates.size(); ++i)
     {
@@ -33,6 +33,50 @@ void makelayout(std::vector<std::shared_ptr<GState>> gstates)
         #ifdef DEBUG_DRAWDFA
         std::cout << "i = " << i << "; coords: (" << gstates[i]->coords.x << ";" << gstates[i]->coords.y << ")" << std::endl;
         #endif
+    }
+for (size_t i = 0; i < gstates.size(); ++i)
+    {
+        //круг
+        gstates[i]->circle.setRadius(20.0f);
+        gstates[i]->circle.setOrigin(gstates[i]->circle.getRadius(), gstates[i]->circle.getRadius()); //чтобы координата центра была положением
+        gstates[i]->circle.setPosition(gstates[i]->coords.x, gstates[i]->coords.y);
+        gstates[i]->circle.setFillColor(sf::Color::White);
+        gstates[i]->circle.setOutlineColor(sf::Color::Red);
+        gstates[i]->circle.setOutlineThickness(2.0f);
+
+        if(gstates[i]->data->is_accepting == true)
+        {
+            gstates[i]->ring.setRadius(17.0f);
+            gstates[i]->ring.setOrigin(gstates[i]->ring.getRadius(), gstates[i]->ring.getRadius()); //чтобы координата центра была положением
+            gstates[i]->ring.setPosition(gstates[i]->coords.x, gstates[i]->coords.y);
+            gstates[i]->ring.setFillColor(sf::Color::White);
+            gstates[i]->ring.setOutlineColor(sf::Color::Red);
+            gstates[i]->ring.setOutlineThickness(1.0f);
+        }
+        else
+        {
+            gstates[i]->ring.setOrigin(gstates[i]->ring.getRadius(), gstates[i]->ring.getRadius()); //чтобы координата центра была положением
+            gstates[i]->ring.setPosition(gstates[i]->coords.x, gstates[i]->coords.y);
+            gstates[i]->ring.setFillColor(sf::Color::White);
+            gstates[i]->ring.setRadius(0.0f);
+        }
+    }
+
+    for(size_t i = 0; i < gstates.size(); ++i)
+    {
+        text.push_back(sf::Text());
+        // select the font
+        text[i].setFont(font); // font is a sf::Font
+
+        // set the string to display
+        text[i].setString(std::to_string(i));
+
+        // set the character size
+        text[i].setCharacterSize(20); // in pixels, not points!
+
+        // set the color
+        text[i].setFillColor(sf::Color::Red);
+        text[i].setPosition(sf::Vector2(gstates[i]->coords.x - 5.0f, gstates[i]->coords.y - 15.0f));
     }
 }
 
@@ -149,38 +193,38 @@ void makearrows(DFA& dfa, std::vector<std::shared_ptr<GState>>& gstates, std::ve
                         arrows[i]->lines[lsize-3][0].color = sf::Color::Red;
                         arrows[i]->lines[lsize-3][1].color = sf::Color::Red;
                         arrows[i]->lines[lsize-2][0].color = sf::Color::Red;
-                        size_t hsize = arrows[i]->heads.size();
-                        arrows[i]->heads[hsize-1].lines[0][0].color = sf::Color::Red;
-                        arrows[i]->heads[hsize-1].lines[0][1].color = sf::Color::Red;
-                        arrows[i]->heads[hsize-1].lines[1][0].color = sf::Color::Red;
-                        arrows[i]->heads[hsize-1].lines[1][1].color = sf::Color::Red;
-                        arrows[i]->heads[hsize-1].lines[2][0].color = sf::Color::Red;
-                        arrows[i]->heads[hsize-1].lines[2][1].color = sf::Color::Red;
                     }
                     else
                     {
                         arrows[i]->lines[lsize-3][0].color = sf::Color::Blue;
                         arrows[i]->lines[lsize-3][1].color = sf::Color::Blue;
                         arrows[i]->lines[lsize-2][0].color = sf::Color::Blue;
-                        size_t hsize = arrows[i]->heads.size();
-                        arrows[i]->heads[hsize-1].lines[0][0].color = sf::Color::Blue;
-                        arrows[i]->heads[hsize-1].lines[0][1].color = sf::Color::Blue;
-                        arrows[i]->heads[hsize-1].lines[1][0].color = sf::Color::Blue;
-                        arrows[i]->heads[hsize-1].lines[1][1].color = sf::Color::Blue;
-                        arrows[i]->heads[hsize-1].lines[2][0].color = sf::Color::Blue;
-                        arrows[i]->heads[hsize-1].lines[2][1].color = sf::Color::Blue;
                     }
                     if(j%2 == 0)
                     {
                         arrows[i]->lines[lsize-2][1].color = sf::Color::Red;
                         arrows[i]->lines[lsize-1][0].color = sf::Color::Red;
                         arrows[i]->lines[lsize-1][1].color = sf::Color::Red;
+                        size_t hsize = arrows[i]->heads.size();
+                        arrows[i]->heads[hsize-1].lines[0][0].color = sf::Color::Red;
+                        arrows[i]->heads[hsize-1].lines[0][1].color = sf::Color::Blue;
+                        arrows[i]->heads[hsize-1].lines[1][0].color = sf::Color::Red;
+                        arrows[i]->heads[hsize-1].lines[1][1].color = sf::Color::Blue;
+                        arrows[i]->heads[hsize-1].lines[2][0].color = sf::Color::Red;
+                        arrows[i]->heads[hsize-1].lines[2][1].color = sf::Color::Blue;
                     }
                     else
                     {
                         arrows[i]->lines[lsize-2][1].color = sf::Color::Blue;
                         arrows[i]->lines[lsize-1][0].color = sf::Color::Blue;
                         arrows[i]->lines[lsize-1][1].color = sf::Color::Blue;
+                        size_t hsize = arrows[i]->heads.size();
+                        arrows[i]->heads[hsize-1].lines[0][0].color = sf::Color::Blue;
+                        arrows[i]->heads[hsize-1].lines[0][1].color = sf::Color::Red;
+                        arrows[i]->heads[hsize-1].lines[1][0].color = sf::Color::Blue;
+                        arrows[i]->heads[hsize-1].lines[1][1].color = sf::Color::Red;
+                        arrows[i]->heads[hsize-1].lines[2][0].color = sf::Color::Blue;
+                        arrows[i]->heads[hsize-1].lines[2][1].color = sf::Color::Red;
                     }
 
                     arrows[i]->text[arrows[i]->text.size() - 1].setPosition((((arrows[i]->lines[lsize-2][0].position.x + arrows[i]->lines[lsize-2][1].position.x)/2)+20*counts[i * gstates.size() + j]), (arrows[i]->lines[lsize-2][0].position.y + arrows[i]->lines[lsize-2][1].position.y)/2);
@@ -191,41 +235,40 @@ void makearrows(DFA& dfa, std::vector<std::shared_ptr<GState>>& gstates, std::ve
     }
 }
 
-void drawdfa(DFA& dfa)
+int drawdfa(DFA& dfa)
 {
     sf::View view; // Окно просмотра.
     sf::RenderWindow window; //создается окно
     sf::ContextSettings context; //какие-то связанные настройки
-    /*
-    ////////////////
+
     tgui::Gui gui{window};
 
     auto editBox = tgui::EditBox::create();
     //editBox->setRenderer(theme.getRenderer("EditBox"));
-    editBox->setSize(300, 30);
+    editBox->setSize(250, 30);
     editBox->setTextSize(20);
-    editBox->setPosition(10, 270);
-    editBox->setDefaultText("Click to edit text...");
+    editBox->setPosition(-300, -15);
+    editBox->setDefaultText("More automatas? y/n");
     gui.add(editBox);
-    //////////////////////
-    */
 
     int scale_base = 2; //изменение масштаба
     int scale_power = 0; //изменение масштаба
 
-    window.create(sf::VideoMode(600, 400)/*ширина, высота*/, "Rubbur"/*имя окна*/, sf::Style::Default, context); // Создание окна.
+    window.create(sf::VideoMode(800, 600)/*ширина, высота*/, "Rubbur"/*имя окна*/, sf::Style::Default, context); // Создание окна.
     window.setFramerateLimit(60); // Ограничение на частоту обновления экрана.
 
     view.setCenter(0.0f, 0.0f); //координаты центра экрана
     view.setSize(static_cast<sf::Vector2f>(window.getSize())); //чтобы отображалась область, совпадающую с экраном
     view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f)); //все, что показывает view, будет на экране
     window.setView(view); //задается камера окну
+    gui.setView(view);
 
     std::vector<std::shared_ptr<DFState>> automata;
     std::vector<std::shared_ptr<GState>> gstates;
     std::unordered_map<DFState*, std::shared_ptr<GState>> table;
     std::vector<std::shared_ptr<GArrow>> arrows;
     std::vector<std::shared_ptr<GArrowHead>> heads;
+    std::vector<sf::Text> text;
 
     sf::Font font;
     if (!font.loadFromFile("../../SourceCodePro-Regular.otf"))
@@ -233,65 +276,13 @@ void drawdfa(DFA& dfa)
         std::cout << "ERROR!!!" << std::endl;
     }
 
-    std::vector<sf::Text> text;
-    //std::vector<std::shared_ptr<sf::Text>> text;
-    //    std::vector<std::vector<std::shared_ptr<sf::Text>>> arrowtext;
-
     makeaut(dfa, automata);
 
     makebase(automata, gstates, table);
 
-    makelayout(gstates);
+    makelayout(gstates, text, font);
 
     makearrows(dfa, gstates, arrows, font);
-
-    for (size_t i = 0; i < gstates.size(); ++i)
-    {
-        //круг
-        gstates[i]->circle.setRadius(20.0f);
-        gstates[i]->circle.setOrigin(gstates[i]->circle.getRadius(), gstates[i]->circle.getRadius()); //чтобы координата центра была положением
-        gstates[i]->circle.setPosition(gstates[i]->coords.x, gstates[i]->coords.y);
-        gstates[i]->circle.setFillColor(sf::Color::White);
-        gstates[i]->circle.setOutlineColor(sf::Color::Red);
-        gstates[i]->circle.setOutlineThickness(2.0f);
-
-        if(gstates[i]->data->is_accepting == true)
-        {
-            gstates[i]->ring.setRadius(17.0f);
-            gstates[i]->ring.setOrigin(gstates[i]->ring.getRadius(), gstates[i]->ring.getRadius()); //чтобы координата центра была положением
-            gstates[i]->ring.setPosition(gstates[i]->coords.x, gstates[i]->coords.y);
-            gstates[i]->ring.setFillColor(sf::Color::White);
-            gstates[i]->ring.setOutlineColor(sf::Color::Red);
-            gstates[i]->ring.setOutlineThickness(1.0f);
-        }
-        else
-        {
-            gstates[i]->ring.setOrigin(gstates[i]->ring.getRadius(), gstates[i]->ring.getRadius()); //чтобы координата центра была положением
-            gstates[i]->ring.setPosition(gstates[i]->coords.x, gstates[i]->coords.y);
-            gstates[i]->ring.setFillColor(sf::Color::White);
-            gstates[i]->ring.setRadius(0.0f);
-        }
-    }
-
-    for(size_t i = 0; i < gstates.size(); ++i)
-    {
-        text.push_back(sf::Text());
-        // select the font
-        text[i].setFont(font); // font is a sf::Font
-
-        // set the string to display
-        text[i].setString(std::to_string(i));
-
-        // set the character size
-        text[i].setCharacterSize(20); // in pixels, not points!
-
-        // set the color
-        text[i].setFillColor(sf::Color::Red);
-        text[i].setPosition(sf::Vector2(gstates[i]->coords.x - 5.0f, gstates[i]->coords.y - 15.0f));
-    }
-
-    // set the text style
-    //text.setStyle(sf::Text::Bold | sf::Text::Underlined);
 
     sf::Vector2f mouse_position; //положение мыши
     sf::Event window_event; //событие мыши
@@ -303,7 +294,7 @@ void drawdfa(DFA& dfa)
             {
                 case sf::Event::Closed: //закрытие
                 {
-                    return;
+                    return 3;
                     break;
                 }
                 case sf::Event::Resized: //изменился размер окна - перенастройка размеров
@@ -311,6 +302,7 @@ void drawdfa(DFA& dfa)
                     view.setSize(static_cast<sf::Vector2f>(window.getSize()) * static_cast<float>(pow(scale_base, scale_power)));
                     view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
                     window.setView(view);
+                    gui.setView(view);
 
                     break;
                 }
@@ -370,6 +362,33 @@ void drawdfa(DFA& dfa)
                         {
                             break;
                         }
+                        ///////
+                        case sf::Keyboard::Enter: //какая-то клавиша
+                        {
+                            const sf::String& more_auts = editBox->getText();
+                            std::string more = more_auts;
+                            std::cout << more << std::endl;
+                            //str = in_put;
+                            if((more == "Yes") || (more == "yes") || (more == "Y") || (more == "y"))
+                            {
+                                window.close();
+                                return 0;
+                            }
+                            else
+                            {
+                                if((more == "No") || (more == "no") || (more == "N") || (more == "n"))
+                                {
+                                    window.close();
+                                    return 1;
+                                }
+                                else
+                                {
+                                    editBox->setText("");
+                                }
+                            }
+                            break;
+                        }
+                        ////////////
                         default:
                         {
                             break;
@@ -381,7 +400,7 @@ void drawdfa(DFA& dfa)
                     break;
                 }
             }
-            //gui.handleEvent(window_event);
+            gui.handleEvent(window_event);
         }
 
         if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) && window.hasFocus()) //зажатая клавиша мыши
@@ -390,6 +409,7 @@ void drawdfa(DFA& dfa)
 
             view.move(mouse_position - new_mouse_position);
             window.setView(view);
+            gui.setView(view);
         }
 
         window.clear(sf::Color::Black); //очистить экран
@@ -420,10 +440,10 @@ void drawdfa(DFA& dfa)
 
             window.draw(text[i]);
         }
-        //window.draw(text);
-        //gui.draw();
 
-        //window.draw(circle);
+        gui.draw();
+
         window.display();
     }
+    return 0;
 }

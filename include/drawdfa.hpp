@@ -13,10 +13,10 @@ void makeaut(DFA& dfa, std::vector<std::shared_ptr<DFState>>& automata);
 
 void makebase(std::vector<std::shared_ptr<DFState>>& automata, std::vector<std::shared_ptr<GState>>& gstates, std::unordered_map<DFState*, std::shared_ptr<GState>>& table);
 
-void makelayout(std::vector<std::shared_ptr<GState>> states);
+void makelayout(std::vector<std::shared_ptr<GState>> states, std::vector<sf::Text>& text, sf::Font& font);
 
 void makearrows(DFA& dfa, std::vector<std::shared_ptr<GState>>& gstates, std::vector<std::shared_ptr<GArrow>>& arrows, sf::Font& font);
 
-void drawdfa(DFA& dfa);
+int drawdfa(DFA& dfa);
 //lockguard
 #endif

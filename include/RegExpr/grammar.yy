@@ -4,6 +4,7 @@
 %define api.token.constructor
 %param {std::istream& stream}
 %parse-param {std::shared_ptr<Node<NData>>& root}
+%param {size_t& count}
 
 %%
 
@@ -102,9 +103,11 @@ L:       LETTER
   namespace yy
   {
     // Return the next token.
-    auto yylex(std::istream& stream) -> parser::symbol_type
+    auto yylex(std::istream& stream, size_t& count) -> parser::symbol_type
     {
+      /*
       static size_t i = 0;
+      */
       /*
       static size_t max_num = 0;
       */
@@ -148,9 +151,9 @@ L:       LETTER
           }
           default:
           {
-            ++i;
+            ++count;
             //++max_num;
-            return parser::make_LETTER(std::make_pair((i - 1), input));
+            return parser::make_LETTER(std::make_pair((count - 1), input));
             break;
           }
         }

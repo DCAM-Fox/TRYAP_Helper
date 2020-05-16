@@ -34,7 +34,7 @@
 // are private implementation details.  Do not rely on them.
 
 // //                    "%code top" blocks.
-#line 11 "grammar.yy" // lalr1.cc:423
+#line 12 "grammar.yy" // lalr1.cc:423
 
 #include "rexpnode.hpp"
 
@@ -598,7 +598,7 @@ switch (yytype)
     };
 
     /// Build a parser object.
-    parser (std::istream& stream_yyarg, std::shared_ptr<Node<NData>>& root_yyarg);
+    parser (std::istream& stream_yyarg, std::shared_ptr<Node<NData>>& root_yyarg, size_t& count_yyarg);
     virtual ~parser ();
 
     /// Parse.  An alias for parse ().
@@ -1036,6 +1036,7 @@ switch (yytype)
     // User arguments.
     std::istream& stream;
     std::shared_ptr<Node<NData>>& root;
+    size_t& count;
   };
 
   parser::token_number_type
@@ -1226,7 +1227,7 @@ switch (yytype)
 
 
 } // yy
-#line 1230 "grammar.hpp" // lalr1.cc:431
+#line 1231 "grammar.hpp" // lalr1.cc:431
 
 
 
@@ -1234,14 +1235,16 @@ switch (yytype)
 
 
 // Unqualified %code blocks.
-#line 101 "grammar.yy" // lalr1.cc:435
+#line 102 "grammar.yy" // lalr1.cc:435
 
   namespace yy
   {
     // Return the next token.
-    auto yylex(std::istream& stream) -> parser::symbol_type
+    auto yylex(std::istream& stream, size_t& count) -> parser::symbol_type
     {
+      /*
       static size_t i = 0;
+      */
       /*
       static size_t max_num = 0;
       */
@@ -1285,9 +1288,9 @@ switch (yytype)
           }
           default:
           {
-            ++i;
+            ++count;
             //++max_num;
-            return parser::make_LETTER(std::make_pair((i - 1), input));
+            return parser::make_LETTER(std::make_pair((count - 1), input));
             break;
           }
         }
@@ -1295,7 +1298,7 @@ switch (yytype)
     }
   }
 
-#line 1299 "grammar.hpp" // lalr1.cc:435
+#line 1302 "grammar.hpp" // lalr1.cc:435
 
 
 #ifndef YY_
@@ -1371,17 +1374,18 @@ switch (yytype)
 
 
 namespace yy {
-#line 1375 "grammar.hpp" // lalr1.cc:510
+#line 1378 "grammar.hpp" // lalr1.cc:510
 
   /// Build a parser object.
-  parser::parser (std::istream& stream_yyarg, std::shared_ptr<Node<NData>>& root_yyarg)
+  parser::parser (std::istream& stream_yyarg, std::shared_ptr<Node<NData>>& root_yyarg, size_t& count_yyarg)
     :
 #if YYDEBUG
       yydebug_ (false),
       yycdebug_ (&std::cerr),
 #endif
       stream (stream_yyarg),
-      root (root_yyarg)
+      root (root_yyarg),
+      count (count_yyarg)
   {}
 
   parser::~parser ()
@@ -1684,7 +1688,7 @@ namespace yy {
         try
 #endif // YY_EXCEPTIONS
           {
-            symbol_type yylookahead (yylex (stream));
+            symbol_type yylookahead (yylex (stream, count));
             yyla.move (yylookahead);
           }
 #if YY_EXCEPTIONS
@@ -1772,90 +1776,90 @@ namespace yy {
           switch (yyn)
             {
   case 2:
-#line 27 "grammar.yy" // lalr1.cc:919
+#line 28 "grammar.yy" // lalr1.cc:919
     {
             root = yystack_[0].value.as < std::shared_ptr<Node<NData>> > ();
         }
-#line 1780 "grammar.hpp" // lalr1.cc:919
+#line 1784 "grammar.hpp" // lalr1.cc:919
     break;
 
   case 3:
-#line 33 "grammar.yy" // lalr1.cc:919
+#line 34 "grammar.yy" // lalr1.cc:919
     {
             yylhs.value.as < std::shared_ptr<Node<NData>> > () = yystack_[0].value.as < std::shared_ptr<Node<NData>> > ();
         }
-#line 1788 "grammar.hpp" // lalr1.cc:919
+#line 1792 "grammar.hpp" // lalr1.cc:919
     break;
 
   case 4:
-#line 37 "grammar.yy" // lalr1.cc:919
+#line 38 "grammar.yy" // lalr1.cc:919
     {
             yylhs.value.as < std::shared_ptr<Node<NData>> > () = std::make_shared<Node<NData>>();
             yylhs.value.as < std::shared_ptr<Node<NData>> > ()->add_child(yystack_[2].value.as < std::shared_ptr<Node<NData>> > ());
             yylhs.value.as < std::shared_ptr<Node<NData>> > ()->add_child(yystack_[0].value.as < std::shared_ptr<Node<NData>> > ());
             yylhs.value.as < std::shared_ptr<Node<NData>> > ()->value.type = NData::Type::Union;
         }
-#line 1799 "grammar.hpp" // lalr1.cc:919
+#line 1803 "grammar.hpp" // lalr1.cc:919
     break;
 
   case 5:
-#line 50 "grammar.yy" // lalr1.cc:919
+#line 51 "grammar.yy" // lalr1.cc:919
     {
             yylhs.value.as < std::shared_ptr<Node<NData>> > () = std::make_shared<Node<NData>>();
             yylhs.value.as < std::shared_ptr<Node<NData>> > ()->add_child(yystack_[1].value.as < std::shared_ptr<Node<NData>> > ());
             yylhs.value.as < std::shared_ptr<Node<NData>> > ()->add_child(yystack_[0].value.as < std::shared_ptr<Node<NData>> > ());
             yylhs.value.as < std::shared_ptr<Node<NData>> > ()->value.type = NData::Type::Conc;
         }
-#line 1810 "grammar.hpp" // lalr1.cc:919
+#line 1814 "grammar.hpp" // lalr1.cc:919
     break;
 
   case 6:
-#line 57 "grammar.yy" // lalr1.cc:919
+#line 58 "grammar.yy" // lalr1.cc:919
     {
             yylhs.value.as < std::shared_ptr<Node<NData>> > () = yystack_[0].value.as < std::shared_ptr<Node<NData>> > ();
         }
-#line 1818 "grammar.hpp" // lalr1.cc:919
+#line 1822 "grammar.hpp" // lalr1.cc:919
     break;
 
   case 7:
-#line 67 "grammar.yy" // lalr1.cc:919
+#line 68 "grammar.yy" // lalr1.cc:919
     {
             yylhs.value.as < std::shared_ptr<Node<NData>> > () = yystack_[0].value.as < std::shared_ptr<Node<NData>> > ();
         }
-#line 1826 "grammar.hpp" // lalr1.cc:919
+#line 1830 "grammar.hpp" // lalr1.cc:919
     break;
 
   case 8:
-#line 71 "grammar.yy" // lalr1.cc:919
+#line 72 "grammar.yy" // lalr1.cc:919
     {
             yylhs.value.as < std::shared_ptr<Node<NData>> > () = std::make_shared<Node<NData>>();
             yylhs.value.as < std::shared_ptr<Node<NData>> > ()->add_child(yystack_[1].value.as < std::shared_ptr<Node<NData>> > ());
             yylhs.value.as < std::shared_ptr<Node<NData>> > ()->value.type = NData::Type::Iter;
         }
-#line 1836 "grammar.hpp" // lalr1.cc:919
+#line 1840 "grammar.hpp" // lalr1.cc:919
     break;
 
   case 9:
-#line 83 "grammar.yy" // lalr1.cc:919
+#line 84 "grammar.yy" // lalr1.cc:919
     {
             yylhs.value.as < std::shared_ptr<Node<NData>> > () = std::make_shared<Node<NData>>();
             yylhs.value.as < std::shared_ptr<Node<NData>> > ()->value.type = NData::Type::Char;
             yylhs.value.as < std::shared_ptr<Node<NData>> > ()->value.firstpos.insert(yystack_[0].value.as < std::pair<size_t, char> > ());
             yylhs.value.as < std::shared_ptr<Node<NData>> > ()->value.lastpos.insert(yystack_[0].value.as < std::pair<size_t, char> > ());
         }
-#line 1847 "grammar.hpp" // lalr1.cc:919
+#line 1851 "grammar.hpp" // lalr1.cc:919
     break;
 
   case 10:
-#line 90 "grammar.yy" // lalr1.cc:919
+#line 91 "grammar.yy" // lalr1.cc:919
     {
             yylhs.value.as < std::shared_ptr<Node<NData>> > () = yystack_[1].value.as < std::shared_ptr<Node<NData>> > ();
         }
-#line 1855 "grammar.hpp" // lalr1.cc:919
+#line 1859 "grammar.hpp" // lalr1.cc:919
     break;
 
 
-#line 1859 "grammar.hpp" // lalr1.cc:919
+#line 1863 "grammar.hpp" // lalr1.cc:919
             default:
               break;
             }
@@ -2109,8 +2113,8 @@ namespace yy {
   const unsigned char
   parser::yyrline_[] =
   {
-       0,    26,    26,    32,    36,    49,    56,    66,    70,    82,
-      89
+       0,    27,    27,    33,    37,    50,    57,    67,    71,    83,
+      90
   };
 
   // Print the state stack on the debug stream.
@@ -2145,8 +2149,8 @@ namespace yy {
 
 
 } // yy
-#line 2149 "grammar.hpp" // lalr1.cc:1242
-#line 163 "grammar.yy" // lalr1.cc:1243
+#line 2153 "grammar.hpp" // lalr1.cc:1242
+#line 166 "grammar.yy" // lalr1.cc:1243
 
 
 namespace yy
