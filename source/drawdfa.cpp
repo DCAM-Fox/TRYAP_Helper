@@ -21,10 +21,6 @@ void makebase(std::vector<std::shared_ptr<DFState>>& automata, std::vector<std::
         gstates[i]->data = automata[i];
         table.insert(std::make_pair(automata[i].get(), gstates[i]));
     }
-    /*
-      gstates[0]->coords.x = 0;
-      gstates[0]->coords.y = 0;
-    */
 }
 
 void makelayout(std::vector<std::shared_ptr<GState>> gstates)
@@ -53,7 +49,7 @@ void makearrows(DFA& dfa, std::vector<std::shared_ptr<GState>>& gstates, std::ve
         {
             counts.push_back(0);
         }
-        //arrowtext.push_back(std::vector<std::shared_ptr<sf::Text>>());
+
         for(size_t c = 0; c < 256; ++c)
         {
             for(size_t j = 0; j < gstates.size(); ++j)
@@ -72,9 +68,14 @@ void makearrows(DFA& dfa, std::vector<std::shared_ptr<GState>>& gstates, std::ve
                     arrowtext.setFont(font); // font is a sf::Font
                     arrowtext.setString(std::string(1, ch)); // std::to_string(ch));
                     arrowtext.setCharacterSize(15); // in pixels, not points!
-                    arrowtext.setFillColor(sf::Color::Red);
-
-                    //size_t tsize = arrows[i]->text.size();
+                    if((i % 2) == 0)
+                    {
+                        arrowtext.setFillColor(sf::Color::Red);
+                    }
+                    else
+                    {
+                        arrowtext.setFillColor(sf::Color::Blue);
+                    }
 
                     arrows[i]->text.push_back(arrowtext);
 
@@ -142,6 +143,46 @@ void makearrows(DFA& dfa, std::vector<std::shared_ptr<GState>>& gstates, std::ve
                             }
                         }
                     }
+
+                    if(i%2 == 0)
+                    {
+                        arrows[i]->lines[lsize-3][0].color = sf::Color::Red;
+                        arrows[i]->lines[lsize-3][1].color = sf::Color::Red;
+                        arrows[i]->lines[lsize-2][0].color = sf::Color::Red;
+                        size_t hsize = arrows[i]->heads.size();
+                        arrows[i]->heads[hsize-1].lines[0][0].color = sf::Color::Red;
+                        arrows[i]->heads[hsize-1].lines[0][1].color = sf::Color::Red;
+                        arrows[i]->heads[hsize-1].lines[1][0].color = sf::Color::Red;
+                        arrows[i]->heads[hsize-1].lines[1][1].color = sf::Color::Red;
+                        arrows[i]->heads[hsize-1].lines[2][0].color = sf::Color::Red;
+                        arrows[i]->heads[hsize-1].lines[2][1].color = sf::Color::Red;
+                    }
+                    else
+                    {
+                        arrows[i]->lines[lsize-3][0].color = sf::Color::Blue;
+                        arrows[i]->lines[lsize-3][1].color = sf::Color::Blue;
+                        arrows[i]->lines[lsize-2][0].color = sf::Color::Blue;
+                        size_t hsize = arrows[i]->heads.size();
+                        arrows[i]->heads[hsize-1].lines[0][0].color = sf::Color::Blue;
+                        arrows[i]->heads[hsize-1].lines[0][1].color = sf::Color::Blue;
+                        arrows[i]->heads[hsize-1].lines[1][0].color = sf::Color::Blue;
+                        arrows[i]->heads[hsize-1].lines[1][1].color = sf::Color::Blue;
+                        arrows[i]->heads[hsize-1].lines[2][0].color = sf::Color::Blue;
+                        arrows[i]->heads[hsize-1].lines[2][1].color = sf::Color::Blue;
+                    }
+                    if(j%2 == 0)
+                    {
+                        arrows[i]->lines[lsize-2][1].color = sf::Color::Red;
+                        arrows[i]->lines[lsize-1][0].color = sf::Color::Red;
+                        arrows[i]->lines[lsize-1][1].color = sf::Color::Red;
+                    }
+                    else
+                    {
+                        arrows[i]->lines[lsize-2][1].color = sf::Color::Blue;
+                        arrows[i]->lines[lsize-1][0].color = sf::Color::Blue;
+                        arrows[i]->lines[lsize-1][1].color = sf::Color::Blue;
+                    }
+
                     arrows[i]->text[arrows[i]->text.size() - 1].setPosition((((arrows[i]->lines[lsize-2][0].position.x + arrows[i]->lines[lsize-2][1].position.x)/2)+20*counts[i * gstates.size() + j]), (arrows[i]->lines[lsize-2][0].position.y + arrows[i]->lines[lsize-2][1].position.y)/2);
                     ++counts[i*gstates.size() + j];
                 }
