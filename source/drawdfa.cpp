@@ -1,5 +1,5 @@
 #include "drawdfa.hpp"
-#include <TGUI/TGUI.hpp>
+#include "messagequeue.hpp"
 
 //#define DEBUG_DRAWDFA
 
@@ -34,7 +34,7 @@ void makelayout(std::vector<std::shared_ptr<GState>> gstates, std::vector<sf::Te
         std::cout << "i = " << i << "; coords: (" << gstates[i]->coords.x << ";" << gstates[i]->coords.y << ")" << std::endl;
         #endif
     }
-for (size_t i = 0; i < gstates.size(); ++i)
+    for (size_t i = 0; i < gstates.size(); ++i)
     {
         //круг
         gstates[i]->circle.setRadius(20.0f);
@@ -49,7 +49,7 @@ for (size_t i = 0; i < gstates.size(); ++i)
             gstates[i]->ring.setRadius(17.0f);
             gstates[i]->ring.setOrigin(gstates[i]->ring.getRadius(), gstates[i]->ring.getRadius()); //чтобы координата центра была положением
             gstates[i]->ring.setPosition(gstates[i]->coords.x, gstates[i]->coords.y);
-            gstates[i]->ring.setFillColor(sf::Color::White);
+            gstates[i]->ring.setFillColor(sf::Color::Transparent);
             gstates[i]->ring.setOutlineColor(sf::Color::Red);
             gstates[i]->ring.setOutlineThickness(1.0f);
         }
@@ -235,33 +235,41 @@ void makearrows(DFA& dfa, std::vector<std::shared_ptr<GState>>& gstates, std::ve
     }
 }
 
-int drawdfa(DFA& dfa)
+void sig_word(std::shared_ptr<mtt::Messaging<GetWord>> get_word_box, std::shared_ptr<tgui::EditBox>& wordBox, bool& is_checking, std::string& the_word, size_t& current_state, std::vector<std::shared_ptr<GState>> & gstates)
+{
+    #ifdef DEBUG_DRAWDFA
+    std::cout << "RECEIVED SIGNAL" << std::endl;
+    #endif
+    is_checking = true;
+    const sf::String& wword = wordBox->getText();
+    std::string word = wword;
+    wordBox->setDefaultText("More words?");
+    wordBox->setText("");
+    //the_word = word;
+    GetWord msg;
+    msg.word = word;
+    msg.should_stop = false;
+    get_word_box->send(msg);
+    #ifdef DEBUG_DRAWDFA
+    std::cout << word << "SENT" << std::endl;
+    #endif
+    the_word = word;
+    current_state = 0;
+    for(size_t i = 0; i < gstates.size(); ++i)
+    {
+        gstates[i]->circle.setFillColor(sf::Color::White);
+    }
+}
+
+std::string drawdfa(DFA& dfa, std::shared_ptr<mtt::Messaging<TurnOn>> turn_on_box, std::shared_ptr<mtt::Messaging<GetWord>> get_word_box)//, std::string& the_word)
 {
     sf::View view; // Окно просмотра.
     sf::RenderWindow window; //создается окно
     sf::ContextSettings context; //какие-то связанные настройки
 
-    tgui::Gui gui{window};
-
-    auto editBox = tgui::EditBox::create();
-    //editBox->setRenderer(theme.getRenderer("EditBox"));
-    editBox->setSize(250, 30);
-    editBox->setTextSize(20);
-    editBox->setPosition(-300, -15);
-    editBox->setDefaultText("More automatas? y/n");
-    gui.add(editBox);
-
-    int scale_base = 2; //изменение масштаба
-    int scale_power = 0; //изменение масштаба
-
-    window.create(sf::VideoMode(800, 600)/*ширина, высота*/, "Rubbur"/*имя окна*/, sf::Style::Default, context); // Создание окна.
-    window.setFramerateLimit(60); // Ограничение на частоту обновления экрана.
-
-    view.setCenter(0.0f, 0.0f); //координаты центра экрана
-    view.setSize(static_cast<sf::Vector2f>(window.getSize())); //чтобы отображалась область, совпадающую с экраном
-    view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f)); //все, что показывает view, будет на экране
-    window.setView(view); //задается камера окну
-    gui.setView(view);
+    bool is_checking = false;
+    size_t current_state = 0;
+    std::string the_word;
 
     std::vector<std::shared_ptr<DFState>> automata;
     std::vector<std::shared_ptr<GState>> gstates;
@@ -276,6 +284,25 @@ int drawdfa(DFA& dfa)
         std::cout << "ERROR!!!" << std::endl;
     }
 
+    sf::Text str1;
+    str1.setFont(font); // font is a sf::Font
+    str1.setString("");
+    str1.setCharacterSize(20); // in pixels, not points!
+    str1.setFillColor(sf::Color::Red);
+    str1.setPosition(-300,35);
+    sf::Text str2;
+    str2.setFont(font); // font is a sf::Font
+    str2.setString("");
+    str2.setCharacterSize(20); // in pixels, not points!
+    str2.setFillColor(sf::Color::Red);
+    str2.setPosition(-300,75);
+    sf::Text str3;
+    str3.setFont(font); // font is a sf::Font
+    str3.setString("");
+    str3.setCharacterSize(20); // in pixels, not points!
+    str3.setFillColor(sf::Color::Red);
+    str3.setPosition(-300,110);
+
     makeaut(dfa, automata);
 
     makebase(automata, gstates, table);
@@ -283,6 +310,37 @@ int drawdfa(DFA& dfa)
     makelayout(gstates, text, font);
 
     makearrows(dfa, gstates, arrows, font);
+
+    tgui::Gui gui{window};
+
+    auto editBox = tgui::EditBox::create();
+    //editBox->setRenderer(theme.getRenderer("EditBox"));
+    editBox->setSize(250, 30);
+    editBox->setTextSize(20);
+    editBox->setPosition(-300, -35);
+    editBox->setDefaultText("More automatas? y/n");
+    gui.add(editBox);
+
+    auto wordBox = tgui::EditBox::create();
+    //editBox->setRenderer(theme.getRenderer("EditBox"));
+    wordBox->setSize(250, 30);
+    wordBox->setTextSize(20);
+    wordBox->setPosition(-300, 0);
+    wordBox->setDefaultText("Put the word to check!");
+    wordBox->connect("ReturnKeyPressed", sig_word, std::ref(get_word_box), std::ref(wordBox), std::ref(is_checking), std::ref(the_word), std::ref(current_state), std::ref(gstates));
+    gui.add(wordBox);
+
+    int scale_base = 2; //изменение масштаба
+    int scale_power = 0; //изменение масштаба
+
+    window.create(sf::VideoMode(800, 600)/*ширина, высота*/, "Rubbur"/*имя окна*/, sf::Style::Default, context); // Создание окна.
+    window.setFramerateLimit(60); // Ограничение на частоту обновления экрана.
+
+    view.setCenter(0.0f, 0.0f); //координаты центра экрана
+    view.setSize(static_cast<sf::Vector2f>(window.getSize())); //чтобы отображалась область, совпадающую с экраном
+    view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f)); //все, что показывает view, будет на экране
+    window.setView(view); //задается камера окну
+    gui.setView(view);
 
     sf::Vector2f mouse_position; //положение мыши
     sf::Event window_event; //событие мыши
@@ -294,7 +352,14 @@ int drawdfa(DFA& dfa)
             {
                 case sf::Event::Closed: //закрытие
                 {
-                    return 3;
+                    GetWord msg;
+                    msg.word = "";
+                    msg.should_stop = true;
+                    get_word_box->send(msg);
+                    #ifdef DEBUG_DRAWDFA
+                    std::cout << "msg SENT" << std::endl;
+                    #endif
+                    return "closed";
                     break;
                 }
                 case sf::Event::Resized: //изменился размер окна - перенастройка размеров
@@ -363,23 +428,53 @@ int drawdfa(DFA& dfa)
                             break;
                         }
                         ///////
+                        case sf::Keyboard::Escape:
+                        {
+                            GetWord msg;
+                            msg.word = "";
+                            msg.should_stop = true;
+                            get_word_box->send(msg);
+                            #ifdef DEBUG_DRAWDFA
+                            std::cout << "msg SENT" << std::endl;
+                            #endif
+                            window.close();
+                            return "closed";
+                            break;
+                        }
                         case sf::Keyboard::Enter: //какая-то клавиша
                         {
                             const sf::String& more_auts = editBox->getText();
+                            //const sf::String& wword = wordBox->getText();
                             std::string more = more_auts;
+                            //std::string word = wword;
                             std::cout << more << std::endl;
+                            //std::cout << word << std::endl;
                             //str = in_put;
                             if((more == "Yes") || (more == "yes") || (more == "Y") || (more == "y"))
                             {
+                                GetWord msg;
+                                msg.word = "";
+                                msg.should_stop = true;
+                                get_word_box->send(msg);
+                                #ifdef DEBUG_DRAWDFA
+                                std::cout << "msg SENT" << std::endl;
+                                #endif
                                 window.close();
-                                return 0;
+                                return "yes";
                             }
                             else
                             {
                                 if((more == "No") || (more == "no") || (more == "N") || (more == "n"))
                                 {
+                                    GetWord msg;
+                                    msg.word = "";
+                                    msg.should_stop = true;
+                                    get_word_box->send(msg);
+                                    #ifdef DEBUG_DRAWDFA
+                                    std::cout << "msg SENT" << std::endl;
+                                    #endif
                                     window.close();
-                                    return 1;
+                                    return "no";
                                 }
                                 else
                                 {
@@ -414,6 +509,73 @@ int drawdfa(DFA& dfa)
 
         window.clear(sf::Color::Black); //очистить экран
 
+
+        if(is_checking == true)
+        {
+            #ifdef DEBUG_DRAWDFA
+            std::cout << current_state << std::endl;
+            #endif
+            if ((current_state == 0) && (gstates[current_state]->circle.getFillColor() == sf::Color::White))
+            {
+                gstates[current_state]->circle.setFillColor(sf::Color::Yellow);
+            }
+            str1.setString("Your word");
+            str2.setString(the_word);
+            TurnOn should_turn_on;
+            if(turn_on_box->try_receive(should_turn_on))
+            {
+                #ifdef DEBUG_DRAWDFA
+                std::cout << current_state << std::endl;
+                #endif
+
+                if(should_turn_on.is_wrong == false)
+                {
+                    if(should_turn_on.state_number == current_state)
+                    {
+                        if (gstates[current_state]->circle.getFillColor() == sf::Color::Yellow)
+                        {
+                            gstates[should_turn_on.state_number]->circle.setFillColor(sf::Color::Cyan);
+                        }
+                        else
+                        {
+                            gstates[should_turn_on.state_number]->circle.setFillColor(sf::Color::Yellow);
+                        }
+                    }
+                    else
+                    {
+                        gstates[should_turn_on.state_number]->circle.setFillColor(sf::Color::Yellow);
+                        gstates[current_state]->circle.setFillColor(sf::Color::White);
+                    }
+                    current_state = should_turn_on.state_number;
+                    if(should_turn_on.is_all == true)
+                    {
+                        if(dfa.states[should_turn_on.state_number]->is_accepting == true)
+                        {
+                            str3.setString("IS ACCEPTED");
+                            #ifdef DEBUG_DRAWDFA
+                            std::cout << "ACCEPTED" << std::endl;
+                            #endif
+                        }
+                        else
+                        {
+                            str3.setString("IS REJECTED");
+                            #ifdef DEBUG_DRAWDFA
+                            std::cout << "NOT ACCEPTED" << std::endl;
+                            #endif
+                        }
+                    }
+                    else
+                    {
+                        str3.setString("IS BEING CHECKED");
+                    }
+                }
+                else
+                {
+                    str3.setString("IS REJECTED");
+                }
+            }
+        }
+
         for (size_t i = 0; i < gstates.size(); ++i)
         {
             //рисование линий
@@ -440,10 +602,13 @@ int drawdfa(DFA& dfa)
 
             window.draw(text[i]);
         }
+        window.draw(str1);
+        window.draw(str2);
+        window.draw(str3);
 
         gui.draw();
 
         window.display();
     }
-    return 0;
+    return "nothing";
 }

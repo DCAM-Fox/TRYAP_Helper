@@ -3,6 +3,8 @@
 #include <TGUI/TGUI.hpp>
 #include <string.h>
 
+//#define DEBUG_STARTSCREEN
+
 int drawstartscreen(std::string& str)//(sf::Font font)
 {
     sf::View view; // Окно просмотра.
@@ -56,7 +58,7 @@ int drawstartscreen(std::string& str)//(sf::Font font)
     rules.push_back(rule);
     rule.setCharacterSize(20);
     rule.setPosition(0,160);
-    rule.setString("1. Use only Latin letters.");
+    rule.setString("1. Use only Latin letters or digits.");
     rules.push_back(rule);
     rule.setPosition(0,180);
     rule.setString("2. Use '+' for union, '*' for iteration.");
@@ -155,10 +157,18 @@ int drawstartscreen(std::string& str)//(sf::Font font)
                         {
                             const sf::String& edinput = editBox->getText();
                             std::string in_put = edinput;
+                            #ifdef DEBUG_STARTSCREEN
                             std::cout << in_put << std::endl;
+                            #endif
                             str = in_put;
                             window.close();
                             return 0;
+                            break;
+                        }
+                        case sf::Keyboard::Escape:
+                        {
+                            window.close();
+                            return 1;
                             break;
                         }
                         ////////////

@@ -13,7 +13,9 @@
 #include "followpos.hpp"
 #include "dfa.hpp"
 #include "drawdfa.hpp"
+#include "messagequeue.hpp"
 #include "startscreen.hpp"
+#include "dfacheckword.hpp"
 
 //#include <X11/Xlib.h>
 
@@ -21,12 +23,13 @@
 //#define DEBUG_FOLLOWPOS
 //#define DEBUG_ROOT
 //#define DEBUG_AUT
+//#define DEBUG_MAIN
 
 int main()
 {
-    int more_dfa = 0;
+    std::string more_dfa = "yes";
 
-    while(more_dfa == 0)
+    while((more_dfa != "no") && (more_dfa != "nothing") && (more_dfa != "closed"))
     {
         //XInitThreads();
 
@@ -38,13 +41,11 @@ int main()
         {
             if(!str.empty())
             {
-                /*
-                  std::cin >> str;
-                */
                 str = "(" + str + ")#";
 
-
+                #ifdef DEBUG_MAIN
                 std::cout << str << std::endl;
+                #endif
 
                 std::stringstream stream(str);
 
@@ -55,8 +56,6 @@ int main()
 
                 if(next_step == 0)
                 {
-                    //std::cout << next_step << std::endl;
-
                     #ifdef DEBUG_ROOT
                     std::cout << root.get() << std::endl;
                     #endif
@@ -116,32 +115,33 @@ int main()
                     }
                     #endif
 
+                    #ifdef DEBUG_AUT
                     for(size_t i = 0; i < dfa.states.size(); ++i)
                     {
                         std::cout << "Is " << i << " accepting? " << dfa.states[i]->is_accepting << std::endl;
                     }
-
-                    //std::thread dfa_thread(drawdfa, std::ref(dfa));
-
-                    //drawstartscreen();
+                    #endif
 
                     drawtree(root);
 
-                    /*
-                      if (dfa_thread.joinable())
-                      {
-                      dfa_thread.join();
-                      }
-                    */
+                    std::shared_ptr<mtt::Messaging<TurnOn>> turn_on_box = std::make_shared<mtt::Messaging<TurnOn>>();
+                    std::shared_ptr<mtt::Messaging<GetWord>> get_word_box = std::make_shared<mtt::Messaging<GetWord>>();
 
-                    more_dfa = drawdfa(dfa);
+                    std::thread check_thread(checkword, std::ref(dfa), std::ref(turn_on_box), std::ref(get_word_box));
+
+                    more_dfa = drawdfa(dfa, turn_on_box, get_word_box);
+
+                    if (check_thread.joinable())
+                    {
+                        check_thread.join();
+                    }
 
                     str = "";
                 }
                 else
                 {
                     std::cout << "Syntax error! Cannot build an automata!" << std::endl;
-                    return 0;
+                    //return 0;
                 }
             }
             else

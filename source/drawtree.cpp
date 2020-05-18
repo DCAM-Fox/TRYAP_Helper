@@ -297,6 +297,16 @@ void drawtree(std::shared_ptr<Node<NData>> root)
                         {
                             break;
                         }
+                        case sf::Keyboard::Enter: //какая-то клавиша
+                        {
+                            window.close();
+                            break;
+                        }
+                        case sf::Keyboard::Escape: //какая-то клавиша
+                        {
+                            window.close();
+                            break;
+                        }
                         default:
                         {
                             break;

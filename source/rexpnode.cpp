@@ -1,5 +1,7 @@
 #include "rexpnode.hpp"
 
+//#define DEBUG_REXPNODE
+
 void calculate(Node<NData>& place)
 {
     switch(place.value.type)
@@ -8,7 +10,6 @@ void calculate(Node<NData>& place)
         {
             place.value.is_nullable = false;
             place.value.depth = 0;
-            //            place.value.name = 
             break;
         }
         case NData::Type::Conc:
@@ -91,18 +92,22 @@ void calculate(Node<NData>& place)
             calculate(*c1);
             /*вычисляем firstpos*/
             place.value.firstpos =  c1->value.firstpos;
+            #ifdef DEBUG_REXPNODE
             std::cout << "FIRSTPOS: ";
             for(auto item : place.value.firstpos)
             {
                 std::cout << "(" << item.first << ";" << item.second << "), " << std::endl;
             }
+            #endif
             /*вычисляем lastpos*/
             place.value.lastpos = c1->value.lastpos;
+            #ifdef DEBUG_REXPNODE
             std::cout << "LASTPOS: ";
             for(auto item : place.value.lastpos)
             {
                 std::cout << "(" << item.first << ";" << item.second << "), " << std::endl;
             }
+            #endif
             /*вычисляем nullable*/
             place.value.is_nullable = true;
             /*вычисляем глубину*/
