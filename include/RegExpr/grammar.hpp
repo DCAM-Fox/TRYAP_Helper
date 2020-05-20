@@ -1024,7 +1024,7 @@ switch (yytype)
     enum
     {
       yyeof_ = 0,
-      yylast_ = 8,     ///< Last index in yytable_.
+      yylast_ = 10,     ///< Last index in yytable_.
       yynnts_ = 6,  ///< Number of nonterminal symbols.
       yyfinal_ = 12, ///< Termination state number.
       yyterror_ = 1,
@@ -2042,7 +2042,7 @@ namespace yy {
   const signed char
   parser::yypact_[] =
   {
-      -1,    -6,    -1,    -6,    -5,    -1,    -3,     5,     1,    -1,
+       1,    -6,     1,    -6,    -5,    -1,    -6,     8,     4,     1,
       -6,    -6,    -6,    -6,    -6
   };
 
@@ -2050,13 +2050,13 @@ namespace yy {
   parser::yydefact_[] =
   {
        0,     9,     0,     2,     3,     6,     7,     0,     0,     0,
-       5,     8,     1,    10,     4
+       8,     5,     1,    10,     4
   };
 
   const signed char
   parser::yypgoto_[] =
   {
-      -6,    -2,     3,    -6,    -6,    -6
+      -6,    -2,     5,    -6,    -6,    -6
   };
 
   const signed char
@@ -2068,20 +2068,22 @@ namespace yy {
   const unsigned char
   parser::yytable_[] =
   {
-       8,     9,     1,     2,    11,    12,    13,    14,    10
+       8,     9,     1,     2,     1,     2,    10,    14,    12,    13,
+      11
   };
 
   const unsigned char
   parser::yycheck_[] =
   {
-       2,     6,     3,     4,     7,     0,     5,     9,     5
+       2,     6,     3,     4,     3,     4,     7,     9,     0,     5,
+       5
   };
 
   const unsigned char
   parser::yystos_[] =
   {
        0,     3,     4,     9,    10,    11,    12,    13,     9,     6,
-      10,     7,     0,     5,     9
+       7,    10,     0,     5,     9
   };
 
   const unsigned char
@@ -2149,7 +2151,7 @@ namespace yy {
 
 
 } // yy
-#line 2153 "grammar.hpp" // lalr1.cc:1242
+#line 2155 "grammar.hpp" // lalr1.cc:1242
 #line 166 "grammar.yy" // lalr1.cc:1243
 
 

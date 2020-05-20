@@ -68,7 +68,7 @@ I:       L
         {
             $$ = $1;
         }
-        | L ITER
+        | I ITER
         {
             $$ = std::make_shared<Node<NData>>();
             $$->add_child($1);
