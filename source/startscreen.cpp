@@ -26,7 +26,7 @@ int drawstartscreen(std::string& str)//(sf::Font font)
     int scale_base = 2; //изменение масштаба
     int scale_power = 0; //изменение масштаба
 
-    window.create(sf::VideoMode(800,600)/*ширина, высота*/, "Rubbur"/*имя окна*/, sf::Style::Default, context); // Создание окна.
+    window.create(sf::VideoMode(800,600)/*ширина, высота*/, "TRYAP"/*имя окна*/, sf::Style::Default, context); // Создание окна.
     window.setFramerateLimit(60); // Ограничение на частоту обновления экрана.
 
     view.setCenter(200.0f, 100.0f); //координаты центра экрана
@@ -43,10 +43,10 @@ int drawstartscreen(std::string& str)//(sf::Font font)
 
     sf::Text greeting;
     greeting.setFont(font); // font is a sf::Font
-    greeting.setString("RUBBUR");
+    greeting.setString("TRYAP");
     greeting.setCharacterSize(100); // in pixels, not points!
     greeting.setFillColor(sf::Color::Red);
-    greeting.setPosition(0,0);
+    greeting.setPosition(25,0);
 
     std::vector<sf::Text> rules;
     sf::Text rule;

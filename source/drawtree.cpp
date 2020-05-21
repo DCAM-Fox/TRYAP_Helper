@@ -83,7 +83,7 @@ void drawtree(std::shared_ptr<Node<NData>> root)
     int scale_base = 2; //изменение масштаба
     int scale_power = 0; //изменение масштаба
 
-    window.create(sf::VideoMode(600, 400)/*ширина, высота*/, "Rubbur"/*имя окна*/, sf::Style::Default, context); // Создание окна.
+    window.create(sf::VideoMode(600, 400)/*ширина, высота*/, "TRYAP"/*имя окна*/, sf::Style::Default, context); // Создание окна.
     window.setFramerateLimit(60); // Ограничение на частоту обновления экрана.
 
     view.setCenter(0.0f, 0.0f); //координаты центра экрана
