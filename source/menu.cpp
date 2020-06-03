@@ -1,41 +1,59 @@
-#include "startscreen.hpp"
+#include "menu.hpp"
 
 #include <TGUI/TGUI.hpp>
 #include <string.h>
 
 //#define DEBUG_STARTSCREEN
 
-void sig_button(sf::RenderWindow & window, bool & is_back)
+void sig_re_dfa(sf::RenderWindow & window, int & algo)
 {
     window.close();
-    is_back = true;
+    algo = 0;
+}
+void sig_re_nfa(sf::RenderWindow & window, int & algo)
+{
+    window.close();
+    algo = 1;
+}
+void sig_minim(sf::RenderWindow & window, int & algo)
+{
+    window.close();
+    algo = 2;
+}
+void sig_determ(sf::RenderWindow & window, int & algo)
+{
+    window.close();
+    algo = 3;
+}
+void sig_aho(sf::RenderWindow & window, int & algo)
+{
+    window.close();
+    algo = 4;
+}
+void sig_mag(sf::RenderWindow & window, int & algo)
+{
+    window.close();
+    algo = 5;
+}
+void sig_ll(sf::RenderWindow & window, int & algo)
+{
+    window.close();
+    algo = 6;
+}
+void sig_lr(sf::RenderWindow & window, int & algo)
+{
+    window.close();
+    algo = 7;
 }
 
-int drawstartscreen(std::string& str)//(sf::Font font)
+int drawmenu()//(sf::Font font)
 {
-    bool is_back = false;
-
     sf::View view; // Окно просмотра.
     sf::RenderWindow window; //создается окно
     sf::ContextSettings context; //какие-то связанные настройки
 
+
     tgui::Gui gui{window};
-
-    auto editBox = tgui::EditBox::create();
-    //editBox->setRenderer(theme.getRenderer("EditBox"));
-    editBox->setSize(365, 30);
-    editBox->setTextSize(20);
-    editBox->setPosition(0, 100);
-    editBox->setDefaultText("Click to enter RE, press ENTER when you did it.");
-    gui.add(editBox);
-    //    editBox->draw();
-
-    auto button = tgui::Button::create();
-    button->setPosition(400, 100);
-    button->setText("BACK TO MENU");
-    button->setSize(100, 30);
-    button->connect("pressed", sig_button, std::ref(window), std::ref(is_back));
-    gui.add(button);
 
     int scale_base = 2; //изменение масштаба
     int scale_power = 0; //изменение масштаба
@@ -49,6 +67,8 @@ int drawstartscreen(std::string& str)//(sf::Font font)
     window.setView(view); //задается камера окну
     gui.setView(view);
 
+    int algo = -1;
+
     sf::Font font;
     if (!font.loadFromFile("../../SourceCodePro-Regular.otf"))
     {
@@ -60,37 +80,71 @@ int drawstartscreen(std::string& str)//(sf::Font font)
     greeting.setString("RUBBUR");
     greeting.setCharacterSize(100); // in pixels, not points!
     greeting.setFillColor(sf::Color::Red);
-    greeting.setPosition(0,0);
+    greeting.setPosition(0,-120);
 
-    std::vector<sf::Text> rules;
-    sf::Text rule;
-    rule.setFont(font);
-    rule.setCharacterSize(30);
-    rule.setFillColor(sf::Color::Red);
-    rule.setPosition(0,130);
-    rule.setString("RULES");
-    rules.push_back(rule);
-    rule.setCharacterSize(20);
-    rule.setPosition(0,160);
-    rule.setString("1. Use only Latin letters or digits.");
-    rules.push_back(rule);
-    rule.setPosition(0,180);
-    rule.setString("2. Use '+' for union, '*' for iteration.");
-    rules.push_back(rule);
-    rule.setPosition(0,200);
-    //rule.setString("3. Two symbols one by one are treated as concatenation.");
-    rule.setString("3. Write symbols one by one for concatenation.");
-    rules.push_back(rule);
-    rule.setPosition(0,220);
-    rule.setString("4. DO NOT USE EMPTY STRING!!!");
-    rules.push_back(rule);
+    auto re_dfa = tgui::Button::create();
+    re_dfa->setPosition(0, 0);
+    re_dfa->setText("RE -> DFA");
+    re_dfa->setSize(100, 30);
+    re_dfa->connect("pressed", sig_re_dfa, std::ref(window), std::ref(algo));
+    gui.add(re_dfa);
+
+    auto re_nfa = tgui::Button::create();
+    re_nfa->setPosition(250, 0);
+    re_nfa->setText("RE -> NFA");
+    re_nfa->setSize(100, 30);
+    re_nfa->connect("pressed", sig_re_nfa, std::ref(window), std::ref(algo));
+    gui.add(re_nfa);
+
+    auto minim = tgui::Button::create();
+    minim->setPosition(0, 50);
+    minim->setText("MINIMIZE");
+    minim->setSize(100, 30);
+    minim->connect("pressed", sig_minim, std::ref(window), std::ref(algo));
+    gui.add(minim);
+
+    auto determ = tgui::Button::create();
+    determ->setPosition(250, 50);
+    determ->setText("DETERMINE");
+    determ->setSize(100, 30);
+    determ->connect("pressed", sig_determ, std::ref(window), std::ref(algo));
+    gui.add(determ);
+
+    auto aho = tgui::Button::create();
+    aho->setPosition(0, 100);
+    aho->setText("DICTIONARY");
+    aho->setSize(100, 30);
+    aho->connect("pressed", sig_aho, std::ref(window), std::ref(algo));
+    gui.add(aho);
+
+    auto mag = tgui::Button::create();
+    mag->setPosition(250, 100);
+    mag->setText("CFL");
+    mag->setSize(100, 30);
+    mag->connect("pressed", sig_mag, std::ref(window), std::ref(algo));
+    gui.add(mag);
+
+    auto ll = tgui::Button::create();
+    ll->setPosition(0, 150);
+    ll->setText("LL");
+    ll->setSize(100, 30);
+    ll->connect("pressed", sig_ll, std::ref(window), std::ref(algo));
+    gui.add(ll);
+
+    auto lr = tgui::Button::create();
+    lr->setPosition(250, 150);
+    lr->setText("LR");
+    lr->setSize(100, 30);
+    lr->connect("pressed", sig_lr, std::ref(window), std::ref(algo));
+    gui.add(lr);
+
 
     // set the text style
     //text.setStyle(sf::Text::Bold | sf::Text::Underlined);
 
     sf::Vector2f mouse_position; //положение мыши
     sf::Event window_event; //событие мыши
-    while (is_back == false)
+    while (algo == -1)
     {
         while (window.isOpen()) //пока открыто окно
         {
@@ -100,7 +154,7 @@ int drawstartscreen(std::string& str)//(sf::Font font)
                 {
                     case sf::Event::Closed: //закрытие
                     {
-                        return 1;
+                        return -1;
                         break;
                     }
                     case sf::Event::Resized: //изменился размер окна - перенастройка размеров
@@ -171,20 +225,14 @@ int drawstartscreen(std::string& str)//(sf::Font font)
                             ///////
                             case sf::Keyboard::Enter: //какая-то клавиша
                             {
-                                const sf::String& edinput = editBox->getText();
-                                std::string in_put = edinput;
-                                #ifdef DEBUG_STARTSCREEN
-                                std::cout << in_put << std::endl;
-                                #endif
-                                str = in_put;
                                 window.close();
-                                return 0;
+                                return -1;
                                 break;
                             }
                             case sf::Keyboard::Escape:
                             {
                                 window.close();
-                                return 1;
+                                return -1;
                                 break;
                             }
                             ////////////
@@ -214,10 +262,6 @@ int drawstartscreen(std::string& str)//(sf::Font font)
             window.clear(sf::Color::Black); //очистить экран
 
             window.draw(greeting);
-            for(size_t i = 0; i < 5; ++i)
-            {
-                window.draw(rules[i]);
-            }
             //window.draw(text);
             gui.draw();
 
@@ -225,9 +269,5 @@ int drawstartscreen(std::string& str)//(sf::Font font)
             window.display();
         }
     }
-    if (is_back == true)
-    {
-        return 3;
-    }
-    return 2;
+    return algo;
 }

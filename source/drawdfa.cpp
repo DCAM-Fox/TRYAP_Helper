@@ -333,7 +333,7 @@ std::string drawdfa(DFA& dfa, std::shared_ptr<mtt::Messaging<TurnOn>> turn_on_bo
     int scale_base = 2; //изменение масштаба
     int scale_power = 0; //изменение масштаба
 
-    window.create(sf::VideoMode(800, 600)/*ширина, высота*/, "TRYAP"/*имя окна*/, sf::Style::Default, context); // Создание окна.
+    window.create(sf::VideoMode(800, 600)/*ширина, высота*/, "Rubbur"/*имя окна*/, sf::Style::Default, context); // Создание окна.
     window.setFramerateLimit(60); // Ограничение на частоту обновления экрана.
 
     view.setCenter(0.0f, 0.0f); //координаты центра экрана

@@ -18,8 +18,10 @@ void makegvec(std::vector<std::shared_ptr<Node<NData>>>& tree, std::vector<std::
     nodes[0]->coords.y = 0;
 }
 
-void makegr(std::shared_ptr<GRExpNode> root, std::unordered_map<Node<NData>*, std::shared_ptr<GRExpNode>>& table)
+//std::pair<float, float>
+void makegr(std::shared_ptr<GRExpNode> root, std::unordered_map<Node<NData>*, std::shared_ptr<GRExpNode>>& table, std::pair<float, float> & sizes, float& minx, float& maxx, float& miny, float& maxy)
 {
+    //std::pair<float, float> sizes;
     //for (auto iter = root->data->children.begin(); iter != root->data->children.end(); ++iter)
     //{
     switch (root->data->value.type)
@@ -34,8 +36,42 @@ void makegr(std::shared_ptr<GRExpNode> root, std::unordered_map<Node<NData>*, st
             table[c2.get()]->coords.x = root->coords.x + (25.f * pow(2, (root->data->value.depth)));
             //table выдает Node
             table[c2.get()]->coords.y = root->coords.y + (50.f * pow(2, (root->data->value.depth)));
-            makegr(table[c1.get()], table);
-            makegr(table[c2.get()], table);
+            makegr(table[c1.get()], table, sizes, minx, maxx, miny, maxy);
+            makegr(table[c2.get()], table, sizes, minx, maxx, miny, maxy);
+            if(table[c1.get()]->coords.x <= minx)
+            {
+                minx = table[c1.get()]->coords.x;
+            }
+            if(table[c1.get()]->coords.x >= maxx)
+            {
+                maxx = table[c1.get()]->coords.x;
+            }
+            if(table[c1.get()]->coords.y <= miny)
+            {
+                miny = table[c1.get()]->coords.y;
+            }
+            if(table[c1.get()]->coords.y >= maxy)
+            {
+                maxy = table[c1.get()]->coords.y;
+            }
+            if(table[c2.get()]->coords.x <= minx)
+            {
+                minx = table[c2.get()]->coords.x;
+            }
+            if(table[c2.get()]->coords.x >= maxx)
+            {
+                maxx = table[c2.get()]->coords.x;
+            }
+            if(table[c2.get()]->coords.y <= miny)
+            {
+                miny = table[c2.get()]->coords.y;
+            }
+            if(table[c2.get()]->coords.y >= maxy)
+            {
+                maxy = table[c2.get()]->coords.y;
+            }
+            //makegr(table[c1.get()], table, sizes, minx, maxx, miny, maxy);
+            //makegr(table[c2.get()], table, sizes, minx, maxx, miny, maxy);
             break;
         }
         case NData::Type::Union:
@@ -48,8 +84,42 @@ void makegr(std::shared_ptr<GRExpNode> root, std::unordered_map<Node<NData>*, st
             table[c2]->coords.x = root->coords.x + (25.f * pow(2, (root->data->value.depth)));
             //table выдает Node
             table[c2]->coords.y = root->coords.y + (50.f * pow(2, (root->data->value.depth)));
-            makegr(table[c1], table);
-            makegr(table[c2], table);
+            //makegr(table[c1], table, sizes, minx, maxx, miny, maxy);
+            //makegr(table[c2], table, sizes, minx, maxx, miny, maxy);
+            if(table[c1]->coords.x <= minx)
+            {
+                minx = table[c1]->coords.x;
+            }
+            if(table[c1]->coords.x >= maxx)
+            {
+                maxx = table[c1]->coords.x;
+            }
+            if(table[c1]->coords.y <= miny)
+            {
+                miny = table[c1]->coords.y;
+            }
+            if(table[c1]->coords.y >= maxy)
+            {
+                maxy = table[c1]->coords.y;
+            }
+            if(table[c2]->coords.x <= minx)
+            {
+                minx = table[c2]->coords.x;
+            }
+            if(table[c2]->coords.x >= maxx)
+            {
+                maxx = table[c2]->coords.x;
+            }
+            if(table[c2]->coords.y <= miny)
+            {
+                miny = table[c2]->coords.y;
+            }
+            if(table[c2]->coords.y >= maxy)
+            {
+                maxy = table[c2]->coords.y;
+            }
+            makegr(table[c1], table, sizes, minx, maxx, miny, maxy);
+            makegr(table[c2], table, sizes, minx, maxx, miny, maxy);
             break;
         }
         case NData::Type::Iter:
@@ -58,7 +128,24 @@ void makegr(std::shared_ptr<GRExpNode> root, std::unordered_map<Node<NData>*, st
             table[c1]->coords.x = root->coords.x;
             //table выдает Node
             table[c1]->coords.y = root->coords.y + (50.f * pow(2, (root->data->value.depth)));
-            makegr(table[c1], table);
+            //makegr(table[c1], table, sizes, minx, maxx, miny, maxy);
+            if(table[c1]->coords.x <= minx)
+            {
+                minx = table[c1]->coords.x;
+            }
+            if(table[c1]->coords.x >= maxx)
+            {
+                maxx = table[c1]->coords.x;
+            }
+            if(table[c1]->coords.y <= miny)
+            {
+                miny = table[c1]->coords.y;
+            }
+            if(table[c1]->coords.y >= maxy)
+            {
+                maxy = table[c1]->coords.y;
+            }
+            makegr(table[c1], table, sizes, minx, maxx, miny, maxy);
             break;
         }
         case NData::Type::Char:
@@ -66,6 +153,47 @@ void makegr(std::shared_ptr<GRExpNode> root, std::unordered_map<Node<NData>*, st
             break;
         }
     }
+    sizes.first = maxx-minx;
+    sizes.second = maxy - miny;
+    std::cout << sizes.first << ", " << sizes.second << std::endl;
+    //return sizes;
+}
+
+void sig_button(sf::RenderWindow & window, tgui::Gui & gui, sf::View & view, std::pair<float, float>& sizes, int scale_base, int & scale_power)
+{
+    //    view.setSize(sizes.first, sizes.second);
+
+    sf::Vector2f vecsizes = (static_cast<sf::Vector2f>(window.getSize()) * static_cast<float>(pow(scale_base, scale_power)));
+    /*
+    while((vecsizes.x < sizes.first) || (vecsizes.y < sizes.second))
+    {
+        //--scale_power;
+        std::cout << "POW++" << std::endl;
+        vecsizes = (static_cast<sf::Vector2f>(window.getSize()) * static_cast<float>(pow(scale_base, scale_power)));
+    }
+    */
+
+    int logx = static_cast<int>(ceil(log(sizes.first/vecsizes.x)/log(2)));
+    int logy = static_cast<int>(ceil(log(sizes.second/vecsizes.y)/log(2)));
+    std::cout << logx << ", " << logy << std::endl;
+    int log = 0;
+    if(logx >= logy)
+    {
+        log = logx;
+    }
+    else
+    {
+        log = logy;
+    }
+    scale_power = log;
+    vecsizes = (static_cast<sf::Vector2f>(window.getSize()) * static_cast<float>(pow(scale_base, scale_power)));
+
+    std::cout << vecsizes.x <<", "<<vecsizes.y<<std::endl;
+
+    view.setSize(vecsizes);
+    //view.setSize(static_cast<sf::Vector2f>(window.getSize()) * static_cast<float>(pow(scale_base, scale_power)));
+    window.setView(view);
+    gui.setView(view);
 }
 
 void drawtree(std::shared_ptr<Node<NData>> root)
@@ -83,13 +211,17 @@ void drawtree(std::shared_ptr<Node<NData>> root)
     int scale_base = 2; //изменение масштаба
     int scale_power = 0; //изменение масштаба
 
-    window.create(sf::VideoMode(600, 400)/*ширина, высота*/, "TRYAP"/*имя окна*/, sf::Style::Default, context); // Создание окна.
+    tgui::Gui gui{window};
+    //std::cout << "You have a GUI!" << std::endl;
+
+    window.create(sf::VideoMode(800, 600)/*ширина, высота*/, "Rubbur"/*имя окна*/, sf::Style::Default, context); // Создание окна.
     window.setFramerateLimit(60); // Ограничение на частоту обновления экрана.
 
     view.setCenter(0.0f, 0.0f); //координаты центра экрана
     view.setSize(static_cast<sf::Vector2f>(window.getSize())); //чтобы отображалась область, совпадающую с экраном
     view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f)); //все, что показывает view, будет на экране
     window.setView(view); //задается камера окну
+    gui.setView(view);
 
     /*
       sf::CircleShape circle;
@@ -109,12 +241,19 @@ void drawtree(std::shared_ptr<Node<NData>> root)
     std::unordered_map<Node<NData>*, std::shared_ptr<GRExpNode>> table;
     makegvec(tree, nodes, table);
 
-    makegr(table[root.get()], table);
+    float minx = 0;
+    float maxx = 0;
+    float miny = 0;
+    float maxy = 0;
+
+    std::pair<float,float> sizes;
+    makegr(table[root.get()], table, sizes, minx, maxx, miny, maxy);
     //, root);
 
     //size_t i = 0;
     //int R = root->value.depth;
     //while (i < nodes.size())
+
     for (size_t i = 0; i < nodes.size(); ++i)
     {
         //круг
@@ -220,6 +359,14 @@ void drawtree(std::shared_ptr<Node<NData>> root)
       };
     */
 
+    auto button = tgui::Button::create();
+    button->setPosition(-50, -50);
+    button->setText("See all");
+    button->setSize(100, 30);
+    button->connect("pressed", sig_button, std::ref(window), std::ref(gui), std::ref(view), std::ref(sizes), std::ref(scale_base), std::ref(scale_power));
+    gui.add(button);
+    //std::cout << "You have a button!" << std::endl;
+
     sf::Vector2f mouse_position; //положение мыши
     sf::Event window_event; //событие мыши
     while (window.isOpen()) //пока открыто окно
@@ -238,6 +385,7 @@ void drawtree(std::shared_ptr<Node<NData>> root)
                     view.setSize(static_cast<sf::Vector2f>(window.getSize()) * static_cast<float>(pow(scale_base, scale_power)));
                     view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
                     window.setView(view);
+                    gui.setView(view);
 
                     break;
                 }
@@ -285,6 +433,7 @@ void drawtree(std::shared_ptr<Node<NData>> root)
                     }
                     view.setSize(static_cast<sf::Vector2f>(window.getSize()) * static_cast<float>(pow(scale_base, scale_power)));
                     window.setView(view);
+                    gui.setView(view);
                     mouse_position = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 
                     break;
@@ -318,6 +467,7 @@ void drawtree(std::shared_ptr<Node<NData>> root)
                     break;
                 }
             }
+            gui.handleEvent(window_event);
         }
 
         if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) && window.hasFocus()) //зажатая клавиша мыши
@@ -326,6 +476,7 @@ void drawtree(std::shared_ptr<Node<NData>> root)
 
             view.move(mouse_position - new_mouse_position);
             window.setView(view);
+            gui.setView(view);
         }
 
         window.clear(sf::Color::Black); //очистить экран
@@ -340,6 +491,7 @@ void drawtree(std::shared_ptr<Node<NData>> root)
             window.draw(nodes[i]->circle);
         }
 
+        gui.draw();
         //window.draw(circle);
         window.display();
     }

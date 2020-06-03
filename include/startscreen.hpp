@@ -9,6 +9,7 @@
 #include "dfstate.hpp"
 #include "Gstate.hpp"
 #include "Garrow.hpp"
+void sig_button(sf::RenderWindow & window, bool & is_back);
 
 int drawstartscreen(std::string& str);// (sf::Font font);
 //lockguard
