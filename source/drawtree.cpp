@@ -188,6 +188,20 @@ void sig_button(sf::RenderWindow & window, tgui::Gui & gui, sf::View & view, std
     gui.setView(view);
 }
 
+void sig_see_info_but(bool& see_info, tgui::Button& see_info_but)
+{
+    if(see_info == false)
+    {
+        see_info_but.setText("Hide info");
+        see_info = true;
+    }
+    else
+    {
+        see_info_but.setText("See info");
+        see_info = false;
+    }
+}
+
 void makenodes(std::vector<std::shared_ptr<GRExpNode>> & nodes, sf::Font& font)
 {
      for (size_t i = 0; i < nodes.size(); ++i)
@@ -407,12 +421,21 @@ void drawtree(std::shared_ptr<Node<NData>> root)
     makenodes(nodes, font);
 
     auto button = tgui::Button::create();
-    button->setPosition(-50, -60);
+    button->setPosition(-110, -60);
     button->setText("See all");
     button->setSize(100, 30);
     button->connect("pressed", sig_button, std::ref(window), std::ref(gui), std::ref(view), std::ref(sizes), std::ref(scale_base), std::ref(scale_power));
     gui.add(button);
     //std::cout << "You have a button!" << std::endl;
+
+    bool see_info = false;
+
+    auto see_info_but = tgui::Button::create();
+    see_info_but->setPosition(10, -60);
+    see_info_but->setText("See info");
+    see_info_but->setSize(100, 30);
+    see_info_but->connect("pressed", sig_see_info_but, std::ref(see_info), std::ref(*(see_info_but)));
+    gui.add(see_info_but);
 
     sf::Vector2f mouse_position; //положение мыши
     sf::Event window_event; //событие мыши
@@ -537,9 +560,12 @@ void drawtree(std::shared_ptr<Node<NData>> root)
             }
             window.draw(nodes[i]->circle);
             window.draw(nodes[i]->info.text);
-            window.draw(nodes[i]->info.nullable);
-            window.draw(nodes[i]->info.firstpos);
-            window.draw(nodes[i]->info.lastpos);
+            if(see_info == true)
+            {
+                window.draw(nodes[i]->info.nullable);
+                window.draw(nodes[i]->info.firstpos);
+                window.draw(nodes[i]->info.lastpos);
+            }
         }
 
         gui.draw();
