@@ -164,14 +164,6 @@ void sig_button(sf::RenderWindow & window, tgui::Gui & gui, sf::View & view, std
     //    view.setSize(sizes.first, sizes.second);
 
     sf::Vector2f vecsizes = (static_cast<sf::Vector2f>(window.getSize()) * static_cast<float>(pow(scale_base, scale_power)));
-    /*
-    while((vecsizes.x < sizes.first) || (vecsizes.y < sizes.second))
-    {
-        //--scale_power;
-        std::cout << "POW++" << std::endl;
-        vecsizes = (static_cast<sf::Vector2f>(window.getSize()) * static_cast<float>(pow(scale_base, scale_power)));
-    }
-    */
 
     int logx = static_cast<int>(ceil(log(sizes.first/vecsizes.x)/log(2)));
     int logy = static_cast<int>(ceil(log(sizes.second/vecsizes.y)/log(2)));
@@ -208,32 +200,78 @@ void makenodes(std::vector<std::shared_ptr<GRExpNode>> & nodes, sf::Font& font)
         //nodes[i]->circle.setOutlineColor(sf::Color::Red);
         nodes[i]->circle.setOutlineThickness(2.0f);
 
+        nodes[i]->info.text.setFont(font); // font is a sf::Font
+        // set the string to display
+        // set the character size
+        nodes[i]->info.text.setCharacterSize(20); // in pixels, not points!
+        // set the color
+        nodes[i]->info.text.setPosition(sf::Vector2(nodes[i]->coords.x - 10.0f, nodes[i]->coords.y - 10.0f));
+
+        nodes[i]->info.nullable.setFont(font); // font is a sf::Font
+        nodes[i]->info.nullable.setCharacterSize(15); // in pixels, not points!
+        nodes[i]->info.nullable.setPosition(sf::Vector2(nodes[i]->coords.x + 20.0f, nodes[i]->coords.y));
+        if(nodes[i]->data->value.is_nullable == true)
+        {
+            nodes[i]->info.nullable.setString("T");
+        }
+        else
+        {
+            nodes[i]->info.nullable.setString("F");
+        }
+        nodes[i]->info.nullable.setFillColor(sf::Color::White);
+
+        std::string firstpos = "{";
+        for (auto item : nodes[i]->data->value.firstpos)
+        {
+            firstpos = firstpos + "(";
+            /////////////////////////////////////////////////////////////
+            firstpos = firstpos + std::to_string(item.first);//static_cast<std::string>(item.first);
+            firstpos = firstpos + ";";
+            firstpos = firstpos + item.second;
+            firstpos = firstpos + ")";
+        }
+        firstpos = firstpos + "}";
+        nodes[i]->info.firstpos.setFont(font); // font is a sf::Font
+        nodes[i]->info.firstpos.setCharacterSize(15); // in pixels, not points!
+        nodes[i]->info.firstpos.setPosition(sf::Vector2(nodes[i]->coords.x + 20.0f, nodes[i]->coords.y - 20.0f));
+        nodes[i]->info.firstpos.setString(firstpos);
+        nodes[i]->info.firstpos.setFillColor(sf::Color::White);
+
+        std::string lastpos = "{";
+        for (auto item : nodes[i]->data->value.lastpos)
+        {
+            lastpos = lastpos + "(";
+            /////////////////////////////////////////////////////////////
+            lastpos = lastpos + std::to_string(item.first);//static_cast<std::string>(item.first);
+            lastpos = lastpos + ";";
+            lastpos = lastpos + item.second;
+            lastpos = lastpos + ")";
+        }
+        lastpos = lastpos + "}";
+        nodes[i]->info.lastpos.setFont(font); // font is a sf::Font
+        nodes[i]->info.lastpos.setCharacterSize(15); // in pixels, not points!
+        nodes[i]->info.lastpos.setPosition(sf::Vector2(nodes[i]->coords.x + 20.0f, nodes[i]->coords.y + 20.0f));
+        nodes[i]->info.lastpos.setString(lastpos);
+        nodes[i]->info.lastpos.setFillColor(sf::Color::White);
+
         switch (nodes[i]->data->value.type)
         {
             case NData::Type::Char:
             {
                 nodes[i]->circle.setOutlineColor(sf::Color::White);
-                nodes[i]->text.setFont(font); // font is a sf::Font
                 // set the string to display
-                nodes[i]->text.setString("ch");
-                // set the character size
-                nodes[i]->text.setCharacterSize(20); // in pixels, not points!
+                nodes[i]->info.text.setString(nodes[i]->data->value.firstpos.begin()->second);
                 // set the color
-                nodes[i]->text.setFillColor(sf::Color::Black);
-                nodes[i]->text.setPosition(sf::Vector2(nodes[i]->coords.x - 10.0f, nodes[i]->coords.y - 10.0f));
+                nodes[i]->info.text.setFillColor(sf::Color::Black);
                 break;
             }
             case NData::Type::Conc:
             {
                 nodes[i]->circle.setOutlineColor(sf::Color::Red);
-                nodes[i]->text.setFont(font); // font is a sf::Font
                 // set the string to display
-                nodes[i]->text.setString("&");
-                // set the character size
-                nodes[i]->text.setCharacterSize(20); // in pixels, not points!
+                nodes[i]->info.text.setString("&");
                 // set the color
-                nodes[i]->text.setFillColor(sf::Color::Red);
-                nodes[i]->text.setPosition(sf::Vector2(nodes[i]->coords.x - 10.0f, nodes[i]->coords.y - 10.0f));
+                nodes[i]->info.text.setFillColor(sf::Color::Red);
                 //первая линия
                 nodes[i]->lines.push_back(std::array<sf::Vertex, 2>());
                 nodes[i]->lines[0][0] = sf::Vertex(nodes[i]->coords);
@@ -262,14 +300,10 @@ void makenodes(std::vector<std::shared_ptr<GRExpNode>> & nodes, sf::Font& font)
             case NData::Type::Union:
             {
                 nodes[i]->circle.setOutlineColor(sf::Color::Blue);
-                nodes[i]->text.setFont(font); // font is a sf::Font
                 // set the string to display
-                nodes[i]->text.setString("+");
-                // set the character size
-                nodes[i]->text.setCharacterSize(20); // in pixels, not points!
+                nodes[i]->info.text.setString("+");
                 // set the color
-                nodes[i]->text.setFillColor(sf::Color::Blue);
-                nodes[i]->text.setPosition(sf::Vector2(nodes[i]->coords.x - 10.0f, nodes[i]->coords.y - 10.0f));
+                nodes[i]->info.text.setFillColor(sf::Color::Blue);
                 //первая линия
                 nodes[i]->lines.push_back(std::array<sf::Vertex, 2>());
                 nodes[i]->lines[0][0] = sf::Vertex(nodes[i]->coords);
@@ -298,14 +332,8 @@ void makenodes(std::vector<std::shared_ptr<GRExpNode>> & nodes, sf::Font& font)
             case NData::Type::Iter:
             {
                 nodes[i]->circle.setOutlineColor(sf::Color::Green);
-                nodes[i]->text.setFont(font); // font is a sf::Font
-                // set the string to display
-                nodes[i]->text.setString("*");
-                // set the character size
-                nodes[i]->text.setCharacterSize(20); // in pixels, not points!
-                // set the color
-                nodes[i]->text.setFillColor(sf::Color::Green);
-                nodes[i]->text.setPosition(sf::Vector2(nodes[i]->coords.x - 10.0f, nodes[i]->coords.y - 10.0f));
+                nodes[i]->info.text.setString("*");
+                nodes[i]->info.text.setFillColor(sf::Color::Green);
                 //единственная линия
                 nodes[i]->lines.push_back(std::array<sf::Vertex, 2>());
                 nodes[i]->lines[0][0] = sf::Vertex(nodes[i]->coords);
@@ -508,7 +536,10 @@ void drawtree(std::shared_ptr<Node<NData>> root)
                 window.draw(nodes[i]->lines[j].data(), 2, sf::Lines);
             }
             window.draw(nodes[i]->circle);
-            window.draw(nodes[i]->text);
+            window.draw(nodes[i]->info.text);
+            window.draw(nodes[i]->info.nullable);
+            window.draw(nodes[i]->info.firstpos);
+            window.draw(nodes[i]->info.lastpos);
         }
 
         gui.draw();
