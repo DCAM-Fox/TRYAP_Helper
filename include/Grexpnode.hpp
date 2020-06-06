@@ -17,6 +17,7 @@ public:
     //sf::RectangleShape line;
     std::vector<std::array<sf::Vertex, 2>> lines; //линии
     sf::CircleShape circle; //кружок
+    sf::Text text;
     std::shared_ptr<Node<NData>> data; //ссылка на узел
     sf::Vector2f coords; //координаты центра
     //конструктор

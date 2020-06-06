@@ -224,10 +224,11 @@ int drawstartscreen(std::string& str)//(sf::Font font)
             //window.draw(circle);
             window.display();
         }
-    }
-    if (is_back == true)
-    {
-        return 3;
+        if (is_back == true)
+        {
+            window.close();
+            return 3;
+        }
     }
     return 2;
 }

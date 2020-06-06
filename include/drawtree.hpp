@@ -17,6 +17,8 @@ void makegr(std::shared_ptr<GRExpNode> root, std::unordered_map<Node<NData>*, st
 
 void sig_button(sf::RenderWindow & window, tgui::Gui & gui, sf::View & view, std::pair<float,float> & sizes, int scale_base, int & scale_power);
 
+void makenodes(std::vector<std::shared_ptr<GRExpNode>>& nodes, sf::Font & font);
+
 void drawtree(std::shared_ptr<Node<NData>> root);
 
 //lockguard

@@ -196,68 +196,12 @@ void sig_button(sf::RenderWindow & window, tgui::Gui & gui, sf::View & view, std
     gui.setView(view);
 }
 
-void drawtree(std::shared_ptr<Node<NData>> root)
+void makenodes(std::vector<std::shared_ptr<GRExpNode>> & nodes, sf::Font& font)
 {
-    sf::View view; // Окно просмотра.
-    sf::RenderWindow window; //создается окно
-    sf::ContextSettings context; //какие-то связанные настройки
-
-    context.antialiasingLevel = 0;
-    context.depthBits = 24;
-    context.stencilBits = 8;
-    context.majorVersion = 3;
-    context.minorVersion = 0;
-
-    int scale_base = 2; //изменение масштаба
-    int scale_power = 0; //изменение масштаба
-
-    tgui::Gui gui{window};
-    //std::cout << "You have a GUI!" << std::endl;
-
-    window.create(sf::VideoMode(800, 600)/*ширина, высота*/, "Rubbur"/*имя окна*/, sf::Style::Default, context); // Создание окна.
-    window.setFramerateLimit(60); // Ограничение на частоту обновления экрана.
-
-    view.setCenter(0.0f, 0.0f); //координаты центра экрана
-    view.setSize(static_cast<sf::Vector2f>(window.getSize())); //чтобы отображалась область, совпадающую с экраном
-    view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f)); //все, что показывает view, будет на экране
-    window.setView(view); //задается камера окну
-    gui.setView(view);
-
-    /*
-      sf::CircleShape circle;
-      circle.setRadius(10.0f);
-      circle.setOrigin(circle.getRadius(), circle.getRadius()); //чтобы координата центра была положением
-      circle.setPosition(10.0f, 20.0f);
-      circle.setFillColor(sf::Color::White);
-      circle.setOutlineColor(sf::Color::Red);
-      circle.setOutlineThickness(2.0f);
-    */
-
-    /*На глубине h запишем место для 2^h вершин; т.е. они будут на расстоянии 50*2^(root.depth - h) друг от друга*/
-    std::vector<std::shared_ptr<Node<NData>>> tree;
-    depthsearch(tree, root);
-
-    std::vector<std::shared_ptr<GRExpNode>> nodes;
-    std::unordered_map<Node<NData>*, std::shared_ptr<GRExpNode>> table;
-    makegvec(tree, nodes, table);
-
-    float minx = 0;
-    float maxx = 0;
-    float miny = 0;
-    float maxy = 0;
-
-    std::pair<float,float> sizes;
-    makegr(table[root.get()], table, sizes, minx, maxx, miny, maxy);
-    //, root);
-
-    //size_t i = 0;
-    //int R = root->value.depth;
-    //while (i < nodes.size())
-
-    for (size_t i = 0; i < nodes.size(); ++i)
+     for (size_t i = 0; i < nodes.size(); ++i)
     {
         //круг
-        nodes[i]->circle.setRadius(10.0f);
+        nodes[i]->circle.setRadius(20.0f);
         nodes[i]->circle.setOrigin(nodes[i]->circle.getRadius(), nodes[i]->circle.getRadius()); //чтобы координата центра была положением
         nodes[i]->circle.setPosition(nodes[i]->coords.x, nodes[i]->coords.y);
         nodes[i]->circle.setFillColor(sf::Color::White);
@@ -269,12 +213,27 @@ void drawtree(std::shared_ptr<Node<NData>> root)
             case NData::Type::Char:
             {
                 nodes[i]->circle.setOutlineColor(sf::Color::White);
-                //++i;
+                nodes[i]->text.setFont(font); // font is a sf::Font
+                // set the string to display
+                nodes[i]->text.setString("ch");
+                // set the character size
+                nodes[i]->text.setCharacterSize(20); // in pixels, not points!
+                // set the color
+                nodes[i]->text.setFillColor(sf::Color::Black);
+                nodes[i]->text.setPosition(sf::Vector2(nodes[i]->coords.x - 10.0f, nodes[i]->coords.y - 10.0f));
                 break;
             }
             case NData::Type::Conc:
             {
                 nodes[i]->circle.setOutlineColor(sf::Color::Red);
+                nodes[i]->text.setFont(font); // font is a sf::Font
+                // set the string to display
+                nodes[i]->text.setString("&");
+                // set the character size
+                nodes[i]->text.setCharacterSize(20); // in pixels, not points!
+                // set the color
+                nodes[i]->text.setFillColor(sf::Color::Red);
+                nodes[i]->text.setPosition(sf::Vector2(nodes[i]->coords.x - 10.0f, nodes[i]->coords.y - 10.0f));
                 //первая линия
                 nodes[i]->lines.push_back(std::array<sf::Vertex, 2>());
                 nodes[i]->lines[0][0] = sf::Vertex(nodes[i]->coords);
@@ -303,6 +262,14 @@ void drawtree(std::shared_ptr<Node<NData>> root)
             case NData::Type::Union:
             {
                 nodes[i]->circle.setOutlineColor(sf::Color::Blue);
+                nodes[i]->text.setFont(font); // font is a sf::Font
+                // set the string to display
+                nodes[i]->text.setString("+");
+                // set the character size
+                nodes[i]->text.setCharacterSize(20); // in pixels, not points!
+                // set the color
+                nodes[i]->text.setFillColor(sf::Color::Blue);
+                nodes[i]->text.setPosition(sf::Vector2(nodes[i]->coords.x - 10.0f, nodes[i]->coords.y - 10.0f));
                 //первая линия
                 nodes[i]->lines.push_back(std::array<sf::Vertex, 2>());
                 nodes[i]->lines[0][0] = sf::Vertex(nodes[i]->coords);
@@ -331,6 +298,14 @@ void drawtree(std::shared_ptr<Node<NData>> root)
             case NData::Type::Iter:
             {
                 nodes[i]->circle.setOutlineColor(sf::Color::Green);
+                nodes[i]->text.setFont(font); // font is a sf::Font
+                // set the string to display
+                nodes[i]->text.setString("*");
+                // set the character size
+                nodes[i]->text.setCharacterSize(20); // in pixels, not points!
+                // set the color
+                nodes[i]->text.setFillColor(sf::Color::Green);
+                nodes[i]->text.setPosition(sf::Vector2(nodes[i]->coords.x - 10.0f, nodes[i]->coords.y - 10.0f));
                 //единственная линия
                 nodes[i]->lines.push_back(std::array<sf::Vertex, 2>());
                 nodes[i]->lines[0][0] = sf::Vertex(nodes[i]->coords);
@@ -350,17 +325,61 @@ void drawtree(std::shared_ptr<Node<NData>> root)
                 break;
             }
         }
-
     }
-    /*
-      {
-      sf::Vertex(sf::Vector2f(10.f, 10.f)),
-      sf::Vertex(sf::Vector2f(150.f, 150.f))
-      };
-    */
+}
+
+void drawtree(std::shared_ptr<Node<NData>> root)
+{
+    sf::View view; // Окно просмотра.
+    sf::RenderWindow window; //создается окно
+    sf::ContextSettings context; //какие-то связанные настройки
+
+    context.antialiasingLevel = 0;
+    context.depthBits = 24;
+    context.stencilBits = 8;
+    context.majorVersion = 3;
+    context.minorVersion = 0;
+
+    int scale_base = 2; //изменение масштаба
+    int scale_power = 0; //изменение масштаба
+
+    tgui::Gui gui{window};
+    //std::cout << "You have a GUI!" << std::endl;
+
+    sf::Font font;
+    if (!font.loadFromFile("../../SourceCodePro-Regular.otf"))
+    {
+        std::cout << "ERROR!!!" << std::endl;
+    }
+
+    window.create(sf::VideoMode(800, 600)/*ширина, высота*/, "Rubbur"/*имя окна*/, sf::Style::Default, context); // Создание окна.
+    window.setFramerateLimit(60); // Ограничение на частоту обновления экрана.
+
+    view.setCenter(0.0f, 0.0f); //координаты центра экрана
+    view.setSize(static_cast<sf::Vector2f>(window.getSize())); //чтобы отображалась область, совпадающую с экраном
+    view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f)); //все, что показывает view, будет на экране
+    window.setView(view); //задается камера окну
+    gui.setView(view);
+
+    /*На глубине h запишем место для 2^h вершин; т.е. они будут на расстоянии 50*2^(root.depth - h) друг от друга*/
+    std::vector<std::shared_ptr<Node<NData>>> tree;
+    depthsearch(tree, root);
+
+    std::vector<std::shared_ptr<GRExpNode>> nodes;
+    std::unordered_map<Node<NData>*, std::shared_ptr<GRExpNode>> table;
+    makegvec(tree, nodes, table);
+
+    float minx = 0;
+    float maxx = 0;
+    float miny = 0;
+    float maxy = 0;
+
+    std::pair<float,float> sizes;
+    makegr(table[root.get()], table, sizes, minx, maxx, miny, maxy);
+    makenodes(nodes, font);
 
     auto button = tgui::Button::create();
-    button->setPosition(-50, -50);
+    button->setPosition(-50, -60);
     button->setText("See all");
     button->setSize(100, 30);
     button->connect("pressed", sig_button, std::ref(window), std::ref(gui), std::ref(view), std::ref(sizes), std::ref(scale_base), std::ref(scale_power));
@@ -489,6 +508,7 @@ void drawtree(std::shared_ptr<Node<NData>> root)
                 window.draw(nodes[i]->lines[j].data(), 2, sf::Lines);
             }
             window.draw(nodes[i]->circle);
+            window.draw(nodes[i]->text);
         }
 
         gui.draw();

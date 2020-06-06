@@ -17,6 +17,7 @@
 #include "startscreen.hpp"
 #include "dfacheckword.hpp"
 #include "menu.hpp"
+#include "minimize.hpp"
 
 //#include <X11/Xlib.h>
 
@@ -34,151 +35,172 @@ int main()
 
     while(what_to_do == 3)
     {
-    algo = drawmenu();
+        algo = drawmenu();
 
-    switch (algo)
-    {
-        case (0) :
+        switch (algo)
         {
-            std::string more_dfa = "yes";
-
-            while((more_dfa != "no") && (more_dfa != "nothing") && (more_dfa != "closed"))
+            case (0) :
             {
-                //XInitThreads();
+                std::string more_dfa = "yes";
 
-                std::string str;
-
-                int what_to_do = drawstartscreen(str);
-
-                if(what_to_do == 0)
+                while((more_dfa != "no") && (more_dfa != "nothing") && (more_dfa != "closed"))
                 {
-                    if(!str.empty())
+                    //XInitThreads();
+
+                    std::string str;
+
+                    int what_to_do = drawstartscreen(str);
+
+                    if(what_to_do == 0)
                     {
-                        str = "(" + str + ")#";
-
-                        #ifdef DEBUG_MAIN
-                        std::cout << str << std::endl;
-                        #endif
-
-                        std::stringstream stream(str);
-
-                        std::shared_ptr<Node<NData>> root;
-                        size_t count = 0;
-                        yy::parser parse(stream, root, count);
-                        int next_step = parse();
-
-                        if(next_step == 0)
+                        if(!str.empty())
                         {
-                            #ifdef DEBUG_ROOT
-                            std::cout << root.get() << std::endl;
-                            #endif
+                            std::set<char> alphabet;
 
-                            calculate(*root);
+                            get_alph(alphabet, str);
 
-                            #ifdef DEBUG_ROOT
-                            std::cout << root->value.firstpos.size() << ' '
-                                      << root->value.is_nullable << ' '
-                                      << root->value.lastpos.size() << std::endl;
-                            #endif
+                            std::cout << "ALPHABET" << std::endl;
 
-                            std::vector<std::set<std::pair<size_t, char>>> followpos;
-                            size_t max_pos = makefollow(str, followpos);
-
-                            #ifdef DEBUG_FOLLOWPOS
-                            std::cout << max_pos << std::endl;
-                            #endif
-
-                            countfollow(root, followpos, max_pos);
-
-                            std::cout << "FOLLOWPOS" << std::endl;
-
-                            for(size_t i = 0; i < followpos.size(); ++i)
-                            {
-                                std::cout << "i = " << i << ": ";
-                                for(auto item : followpos[i])
+                                for(auto item : alphabet)
                                 {
-                                    std::cout << "(" << item.first << ";" << item.second << "), ";
+                                    std::cout << item << ' ';
                                 }
                                 std::cout << std::endl;
-                            }
 
-                            DFA dfa;
+                            str = "(" + str + ")#";
 
-                            makestart(root, dfa.states, dfa.transit, max_pos);
-                            makestates(dfa.states, dfa.transit, max_pos, followpos);
-                            makefinal(dfa.states, dfa.fin);
+                            #ifdef DEBUG_MAIN
+                            std::cout << str << std::endl;
+                            #endif
 
-                            #ifdef DEBUG_AUT
-                            std::cout << "AUTOMATA" << std::endl;
-                            std::cout << "   | ";
+                            std::stringstream stream(str);
 
-                            for(size_t i = size_t('a'); i <= size_t('z'); ++i)
+                            std::shared_ptr<Node<NData>> root;
+                            size_t count = 0;
+                            yy::parser parse(stream, root, count);
+                            int next_step = parse();
+
+                            if(next_step == 0)
                             {
-                                std::cout << char(i) << " | ";
-                            }
-                            std::cout << std::endl;
-                            for(size_t i = 0; i < (dfa.transit.size()/256); ++i)
-                            {
-                                std::cout << i << " | ";
-                                for(size_t j = size_t('a'); j <= size_t('z'); ++j)
+                                #ifdef DEBUG_ROOT
+                                std::cout << root.get() << std::endl;
+                                #endif
+
+                                calculate(*root);
+
+                                #ifdef DEBUG_ROOT
+                                std::cout << root->value.firstpos.size() << ' '
+                                          << root->value.is_nullable << ' '
+                                          << root->value.lastpos.size() << std::endl;
+                                #endif
+
+                                std::vector<std::set<std::pair<size_t, char>>> followpos;
+                                size_t max_pos = makefollow(str, followpos);
+
+                                #ifdef DEBUG_FOLLOWPOS
+                                std::cout << max_pos << std::endl;
+                                #endif
+
+                                countfollow(root, followpos, max_pos);
+
+                                std::cout << "FOLLOWPOS" << std::endl;
+
+                                for(size_t i = 0; i < followpos.size(); ++i)
                                 {
-                                    std::cout << dfa.transit[256*i + j] << " | ";
+                                    std::cout << "i = " << i << ": ";
+                                    for(auto item : followpos[i])
+                                    {
+                                        std::cout << "(" << item.first << ";" << item.second << "), ";
+                                    }
+                                    std::cout << std::endl;
+                                }
+
+                                DFA dfa;
+
+                                makestart(root, dfa.states, dfa.transit, max_pos);
+                                makestates(dfa.states, dfa.transit, max_pos, followpos);
+                                makefinal(dfa.states, dfa.fin);
+
+                                #ifdef DEBUG_AUT
+                                std::cout << "AUTOMATA" << std::endl;
+                                std::cout << "   | ";
+
+                                for(size_t i = size_t('a'); i <= size_t('z'); ++i)
+                                {
+                                    std::cout << char(i) << " | ";
                                 }
                                 std::cout << std::endl;
-                            }
-                            #endif
+                                for(size_t i = 0; i < (dfa.transit.size()/256); ++i)
+                                {
+                                    std::cout << i << " | ";
+                                    for(size_t j = size_t('a'); j <= size_t('z'); ++j)
+                                    {
+                                        std::cout << dfa.transit[256*i + j] << " | ";
+                                    }
+                                    std::cout << std::endl;
+                                }
+                                #endif
 
-                            #ifdef DEBUG_AUT
-                            for(size_t i = 0; i < dfa.states.size(); ++i)
+                                #ifdef DEBUG_AUT
+                                for(size_t i = 0; i < dfa.states.size(); ++i)
+                                {
+                                    std::cout << "Is " << i << " accepting? " << dfa.states[i]->is_accepting << std::endl;
+                                }
+                                #endif
+
+                                drawtree(root);
+
+                                std::shared_ptr<mtt::Messaging<TurnOn>> turn_on_box = std::make_shared<mtt::Messaging<TurnOn>>();
+                                std::shared_ptr<mtt::Messaging<GetWord>> get_word_box = std::make_shared<mtt::Messaging<GetWord>>();
+
+                                std::thread check_thread(checkword, std::ref(dfa), std::ref(turn_on_box), std::ref(get_word_box));
+
+                                more_dfa = drawdfa(dfa, turn_on_box, get_word_box);
+
+                                if (check_thread.joinable())
+                                {
+                                    check_thread.join();
+                                }
+
+                                str = "";
+                            }
+                            else
                             {
-                                std::cout << "Is " << i << " accepting? " << dfa.states[i]->is_accepting << std::endl;
+                                std::cout << "Syntax error! Cannot build an automata!" << std::endl;
+                                //return 0;
                             }
-                            #endif
-
-                            drawtree(root);
-
-                            std::shared_ptr<mtt::Messaging<TurnOn>> turn_on_box = std::make_shared<mtt::Messaging<TurnOn>>();
-                            std::shared_ptr<mtt::Messaging<GetWord>> get_word_box = std::make_shared<mtt::Messaging<GetWord>>();
-
-                            std::thread check_thread(checkword, std::ref(dfa), std::ref(turn_on_box), std::ref(get_word_box));
-
-                            more_dfa = drawdfa(dfa, turn_on_box, get_word_box);
-
-                            if (check_thread.joinable())
-                            {
-                                check_thread.join();
-                            }
-
-                            str = "";
                         }
                         else
                         {
-                            std::cout << "Syntax error! Cannot build an automata!" << std::endl;
-                            //return 0;
+                            std::cout << "You putted an empty string!" << std::endl;
                         }
                     }
                     else
                     {
-                        std::cout << "You putted an empty string!" << std::endl;
+                        if(what_to_do != 3)
+                        {
+                            std::cout << "You did nothing!" << std::endl;
+                            return 0;
+                        }
+                        else
+                        {
+                            more_dfa = "no";
+                            //return 0;
+                        }
                     }
                 }
-                else
-                {
-                    if(what_to_do != 3)
-                    {
-                        std::cout << "You did nothing!" << std::endl;
-                        return 0;
-                    }
-                }
+                break;
             }
-            break;
+            case (-1) :
+            {
+                return 0;
+            }
+            default :
+            {
+                std::cout << "Sorry, this algorythm is not ready yet." << std::endl;
+                break;
+            }
         }
-        default :
-        {
-            std::cout << "Sorry, this algorythm is not ready yet." << std::endl;
-            break;
-        }
-    }
     }
     return 0;
 }
