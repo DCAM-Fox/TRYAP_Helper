@@ -261,6 +261,11 @@ void sig_word(std::shared_ptr<mtt::Messaging<GetWord>> get_word_box, std::shared
     }
 }
 
+void sig_button(bool & sfp)
+{
+    sfp = true;
+}
+
 std::string drawdfa(DFA& dfa, std::shared_ptr<mtt::Messaging<TurnOn>> turn_on_box, std::shared_ptr<mtt::Messaging<GetWord>> get_word_box)//, std::string& the_word)
 {
     sf::View view; // Окно просмотра.
@@ -329,6 +334,15 @@ std::string drawdfa(DFA& dfa, std::shared_ptr<mtt::Messaging<TurnOn>> turn_on_bo
     wordBox->setDefaultText("Put the word to check!");
     wordBox->connect("ReturnKeyPressed", sig_word, std::ref(get_word_box), std::ref(wordBox), std::ref(is_checking), std::ref(the_word), std::ref(current_state), std::ref(gstates));
     gui.add(wordBox);
+
+    bool sfp = false;
+
+    auto button = tgui::Button::create();
+    button->setPosition(-425, 0);
+    button->setText("SHOW FOLLOWPOS");
+    button->setSize(100, 30);
+    button->connect("pressed", sig_button, std::ref(sfp));
+    gui.add(button);
 
     int scale_base = 2; //изменение масштаба
     int scale_power = 0; //изменение масштаба
@@ -507,6 +521,11 @@ std::string drawdfa(DFA& dfa, std::shared_ptr<mtt::Messaging<TurnOn>> turn_on_bo
             gui.setView(view);
         }
 
+        if(sfp == true)
+        {
+            gui.remove(button);
+        }
+
         window.clear(sf::Color::Black); //очистить экран
 
 
@@ -609,6 +628,8 @@ std::string drawdfa(DFA& dfa, std::shared_ptr<mtt::Messaging<TurnOn>> turn_on_bo
         gui.draw();
 
         window.display();
+
+        //std::cout << "w";
     }
     return "nothing";
 }

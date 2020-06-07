@@ -18,6 +18,8 @@
 #include "dfacheckword.hpp"
 #include "menu.hpp"
 #include "minimize.hpp"
+#include "drawdfall.hpp"
+//#include "showfp.hpp"
 
 //#include <X11/Xlib.h>
 
@@ -43,13 +45,18 @@ int main()
             {
                 std::string more_dfa = "yes";
 
-                while((more_dfa != "no") && (more_dfa != "nothing") && (more_dfa != "closed"))
+                std::vector<std::set<std::pair<size_t, char>>> followpos;
+
+                while((more_dfa != "no") &&
+                      (more_dfa != "nothing") &&
+                      (more_dfa != "closed") &&
+                      (more_dfa != "sfp"))
                 {
                     //XInitThreads();
 
                     std::string str;
 
-                    int what_to_do = drawstartscreen(str);
+                    what_to_do = drawstartscreen(str);
 
                     if(what_to_do == 0)
                     {
@@ -61,11 +68,11 @@ int main()
 
                             std::cout << "ALPHABET" << std::endl;
 
-                                for(auto item : alphabet)
-                                {
-                                    std::cout << item << ' ';
-                                }
-                                std::cout << std::endl;
+                            for(auto item : alphabet)
+                            {
+                                std::cout << item << ' ';
+                            }
+                            std::cout << std::endl;
 
                             str = "(" + str + ")#";
 
@@ -94,7 +101,6 @@ int main()
                                           << root->value.lastpos.size() << std::endl;
                                 #endif
 
-                                std::vector<std::set<std::pair<size_t, char>>> followpos;
                                 size_t max_pos = makefollow(str, followpos);
 
                                 #ifdef DEBUG_FOLLOWPOS
@@ -148,14 +154,47 @@ int main()
                                 }
                                 #endif
 
+                                /*
                                 drawtree(root);
-
+                                */
                                 std::shared_ptr<mtt::Messaging<TurnOn>> turn_on_box = std::make_shared<mtt::Messaging<TurnOn>>();
                                 std::shared_ptr<mtt::Messaging<GetWord>> get_word_box = std::make_shared<mtt::Messaging<GetWord>>();
 
                                 std::thread check_thread(checkword, std::ref(dfa), std::ref(turn_on_box), std::ref(get_word_box));
-
+                                /*
                                 more_dfa = drawdfa(dfa, turn_on_box, get_word_box);
+                                */
+                                more_dfa = drawdfall(dfa, root, turn_on_box, get_word_box);
+                                /*
+                                  if(more_dfa == "sfp")
+                                  {
+                                  std::cout << "sfp" << std::endl;
+                                  int sfp = -1;
+                                  sfp = showfp(followpos);
+                                  std::cout << sfp << std::endl;
+                                  if(sfp != -1)
+                                  {
+                                  more_dfa = "no";
+                                  std::cout << more_dfa << std::endl;
+                                  if (check_thread.joinable())
+                                  {
+                                  check_thread.join();
+                                  }
+                                  std::cout << "+" << std::endl;
+                                  str = "";
+                                  //return 0;
+                                  }
+                                  if (sfp == 3)
+                                  {
+                                  more_dfa = "yes";
+                                  }
+                                  }
+                                */
+                                /*
+                                  std::cout << "sfp" << std::endl;
+
+                                  int sfp = showfp(followpos);
+                                */
 
                                 if (check_thread.joinable())
                                 {
@@ -203,10 +242,10 @@ int main()
         }
     }
     /*
-    int num;
-    std::cin >> num;
-    std::string str = int_to_str(num);
-    std::cout << str << std::endl;
+      int num;
+      std::cin >> num;
+      std::string str = int_to_str(num);
+      std::cout << str << std::endl;
     */
     return 0;
 }

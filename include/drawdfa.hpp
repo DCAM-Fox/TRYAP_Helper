@@ -22,6 +22,8 @@ void makearrows(DFA& dfa, std::vector<std::shared_ptr<GState>>& gstates, std::ve
 
 void sig_word(std::shared_ptr<mtt::Messaging<GetWord>> get_word_box, std::shared_ptr<tgui::EditBox>& wordBox, bool& is_checking, std::string& the_word, size_t& current_state, std::vector<std::shared_ptr<GState>> & gstates);
 
+void sig_button(bool & sfp);
+
 std::string drawdfa(DFA& dfa, std::shared_ptr<mtt::Messaging<TurnOn>> turn_on_box, std::shared_ptr<mtt::Messaging<GetWord>> get_word_box);//, std::string& the_word)
 //std::string drawdfa(DFA& dfa);
 //lockguard
