@@ -32,19 +32,28 @@ void sig_see_tree(sf::RenderWindow & window, tgui::Gui & gui, sf::View & view, s
     gui.setView(view);
 }
 
-void if_draw_aut(bool & draw_aut, bool & draw_tree)
+void if_draw_aut(bool & draw_aut, bool & draw_tree, bool & draw_fp)
 {
     draw_aut = true;
     draw_tree = false;
+    draw_fp = false;
 }
 
-void if_draw_tree(bool & draw_aut, bool & draw_tree)
+void if_draw_tree(bool & draw_aut, bool & draw_tree, bool & draw_fp)
 {
-    draw_tree = true;
     draw_aut = false;
+    draw_tree = true;
+    draw_fp = false;
 }
 
-std::string drawdfall(DFA& dfa, std::shared_ptr<Node<NData>> root, std::shared_ptr<mtt::Messaging<TurnOn>> turn_on_box, std::shared_ptr<mtt::Messaging<GetWord>> get_word_box)//, std::string& the_word)
+void if_draw_fp(bool & draw_aut, bool & draw_tree, bool & draw_fp)
+{
+    draw_aut = false;
+    draw_tree = false;
+    draw_fp = true;
+}
+
+std::string drawdfall(DFA& dfa, std::shared_ptr<Node<NData>> root, std::vector<std::set<std::pair<size_t, char>>>& followpos, std::shared_ptr<mtt::Messaging<TurnOn>> turn_on_box, std::shared_ptr<mtt::Messaging<GetWord>> get_word_box)//, std::string& the_word)
 {
     sf::View view; // Окно просмотра.
     sf::RenderWindow window; //создается окно
@@ -164,17 +173,52 @@ std::string drawdfall(DFA& dfa, std::shared_ptr<Node<NData>> root, std::shared_p
     wordBox->connect("ReturnKeyPressed", sig_word, std::ref(get_word_box), std::ref(wordBox), std::ref(is_checking), std::ref(the_word), std::ref(current_state), std::ref(gstates));
     //gui.add(wordBox);
 
+    ////FOLLOWPOS////
+    sf::Text greetingp;
+    greetingp.setFont(font); // font is a sf::Font
+    greetingp.setString("FOLLOWPOS");
+    greetingp.setCharacterSize(50); // in pixels, not points!
+    greetingp.setFillColor(sf::Color::Red);
+    greetingp.setPosition(0,0);
+
+    //std::cout << "Greeting" << std::endl;
+
+    std::vector<sf::Text> poses;
+    sf::Text posi;
+    std::string pos;
+
+    for(size_t i = 0; i < followpos.size(); ++i)
+    {
+        pos = std::to_string(i);
+        pos = pos + ": {";
+        for(auto item : followpos[i])
+        {
+            pos = pos + "(";
+            pos = pos + std::to_string(item.first);
+            pos = pos + ";";
+            pos = pos + item.second;
+            pos = pos + ")";
+        }
+        pos = pos + "}";
+        posi.setFont(font);
+        posi.setCharacterSize(30);
+        posi.setFillColor(sf::Color::Red);
+        posi.setPosition(0,(60 + 30*i));
+        posi.setString(pos);
+        poses.push_back(posi);
+    }
 
     //WHAT TO DO//
     bool draw_aut = true;
     bool draw_tree = false;
+    bool draw_fp = false;
 
     bool is_dab = false;
     auto draw_aut_but = tgui::Button::create();
     draw_aut_but->setPosition(-50, -100);
     draw_aut_but->setText("AUTOMATA");
     draw_aut_but->setSize(100, 30);
-    draw_aut_but->connect("pressed", if_draw_aut, std::ref(draw_aut), std::ref(draw_tree));
+    draw_aut_but->connect("pressed", if_draw_aut, std::ref(draw_aut), std::ref(draw_tree), std::ref(draw_fp));
     //gui.add(draw_aut_but);
 
     bool is_dtb = false;
@@ -182,9 +226,16 @@ std::string drawdfall(DFA& dfa, std::shared_ptr<Node<NData>> root, std::shared_p
     draw_tree_but->setPosition(-425, 0);
     draw_tree_but->setText("TREE");
     draw_tree_but->setSize(100, 30);
-    draw_tree_but->connect("pressed", if_draw_tree, std::ref(draw_aut), std::ref(draw_tree));
+    draw_tree_but->connect("pressed", if_draw_tree, std::ref(draw_aut), std::ref(draw_tree), std::ref(draw_fp));
     //gui.add(draw_aut_but);
 
+    bool is_dfb = false;
+    auto draw_fp_but = tgui::Button::create();
+    draw_fp_but->setPosition(-425, -35);
+    draw_fp_but->setText("FOLLOWPOS");
+    draw_fp_but->setSize(100, 30);
+    draw_fp_but->connect("pressed", if_draw_fp, std::ref(draw_aut), std::ref(draw_tree), std::ref(draw_fp));
+    //gui.add(draw_aut_but);
 
     sf::Vector2f mouse_position; //положение мыши
     sf::Event window_event; //событие мыши
@@ -259,6 +310,7 @@ std::string drawdfall(DFA& dfa, std::shared_ptr<Node<NData>> root, std::shared_p
                     }
                     view.setSize(static_cast<sf::Vector2f>(window.getSize()) * static_cast<float>(pow(scale_base, scale_power)));
                     window.setView(view);
+                    gui.setView(view);
                     mouse_position = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 
                     break;
@@ -364,10 +416,17 @@ std::string drawdfall(DFA& dfa, std::shared_ptr<Node<NData>> root, std::shared_p
                 gui.add(wordBox);
                 is_wb = true;
             }
+            draw_tree_but->setPosition(-425, 0);
             if(is_dtb == false)
             {
                 gui.add(draw_tree_but);
                 is_dtb = true;
+            }
+            draw_fp_but->setPosition(-425, -35);
+            if(is_dfb == false)
+            {
+                gui.add(draw_fp_but);
+                is_dfb = true;
             }
             if(is_sat == true)
             {
@@ -412,6 +471,53 @@ std::string drawdfall(DFA& dfa, std::shared_ptr<Node<NData>> root, std::shared_p
                 gui.add(see_info_but);
                 is_sib = true;
             }
+            draw_aut_but->setPosition(-110, -100);
+            if(is_dab == false)
+            {
+                gui.add(draw_aut_but);
+                is_dab = true;
+            }
+            draw_fp_but->setPosition(10, -100);
+            if(is_dfb == false)
+            {
+                gui.add(draw_fp_but);
+                is_dfb = true;
+            }
+        }
+        if(draw_fp == true)
+        {
+            if(is_eb == true)
+            {
+                gui.remove(editBox);
+                is_eb = false;
+            }
+            if(is_wb == true)
+            {
+                gui.remove(wordBox);
+                is_wb = false;
+            }
+            if(is_dfb == true)
+            {
+                gui.remove(draw_fp_but);
+                is_dfb = false;
+            }
+            if(is_sat == true)
+            {
+                gui.remove(see_all_tree);
+                is_sat = false;
+            }
+            if(is_sib == true)
+            {
+                gui.remove(see_info_but);
+                is_sib = false;
+            }
+            draw_tree_but->setPosition(10, -100);
+            if(is_dtb == false)
+            {
+                gui.add(draw_tree_but);
+                is_dtb = true;
+            }
+            draw_aut_but->setPosition(-110, -100);
             if(is_dab == false)
             {
                 gui.add(draw_aut_but);
@@ -536,6 +642,14 @@ std::string drawdfall(DFA& dfa, std::shared_ptr<Node<NData>> root, std::shared_p
                     window.draw(nodes[i]->info.firstpos);
                     window.draw(nodes[i]->info.lastpos);
                 }
+            }
+        }
+        if(draw_fp == true)
+        {
+            window.draw(greetingp);
+            for(size_t i = 0; i < followpos.size(); ++i)
+            {
+                window.draw(poses[i]);
             }
         }
         gui.draw();

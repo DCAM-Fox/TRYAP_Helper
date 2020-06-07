@@ -164,7 +164,7 @@ int main()
                                 /*
                                 more_dfa = drawdfa(dfa, turn_on_box, get_word_box);
                                 */
-                                more_dfa = drawdfall(dfa, root, turn_on_box, get_word_box);
+                                more_dfa = drawdfall(dfa, root, followpos, turn_on_box, get_word_box);
                                 /*
                                   if(more_dfa == "sfp")
                                   {
